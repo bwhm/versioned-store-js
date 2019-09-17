@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "https://joystream.org/new-schema.schema.json",
-  "title": "JoystreamNewSchema",
-  "description": "JSON schema to describe a schema for a certain class in Joystream network",
+  "$id": "https://joystream.org/AddClassSchema.schema.json",
+  "title": "AddClassSchema",
+  "description": "JSON schema to describe a new schema for a certain class in Joystream network",
   "type": "object",
   "additionalProperties": false,
   "required": [

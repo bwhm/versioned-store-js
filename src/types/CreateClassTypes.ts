@@ -1,9 +1,9 @@
-export type NewClassInputType = {
+export type CreateClassInputType = {
   name: string,
   description: string
 }
 
-// export type NewClassOutputType = {
+// export type CreateClassOutputType = {
 //   name: Text,
 //   description: Text
 // }

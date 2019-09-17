@@ -1,13 +1,19 @@
-import * as newClassSchema from './schemas/new-class.schema.json' 
-import * as newSchemaSchema from './schemas/new-schema.schema.json'
+import * as createClassSchema from './schemas/CreateClass.schema.json'
+import * as addClassSchemaSchema from './schemas/AddClassSchema.schema.json'
+import * as createEntitySchema from './schemas/CreateEntity.schema.json'
+import * as addSchemaSupportToEntitySchema from './schemas/AddSchemaSupportToEntity.schema.json'
 
-import { NewClassInputType } from './types/NewClassType.js';
-import { NewSchemaInputType } from './types/NewSchemaType.js';
+import { CreateClassInputType } from './types/CreateClassTypes.js';
+import { AddClassSchemaInputType } from './types/AddClassSchemaTypes.js';
 
 import * as Ajv from 'ajv';
+import { CreateEntityInputType } from './types/CreateEntityTypes.js';
+import { AddSchemaSupportToEntityInputType } from './types/AddSchemaSupportToEntityTypes.js';
 const ajv = new Ajv({ allErrors: true });
-const newClassAjv = ajv.compile(newClassSchema);
-const newSchemaAjv = ajv.compile(newSchemaSchema);
+const createClassAjv = ajv.compile(createClassSchema);
+const addClassSchemaAjv = ajv.compile(addClassSchemaSchema);
+const createEntityAjv = ajv.compile(createEntitySchema);
+const addSchemaSupportToEntityAjv = ajv.compile(addSchemaSupportToEntitySchema);
 
 type ValidationResult = {
   valid: boolean
@@ -20,10 +26,18 @@ function validateSchema (validateFn: Ajv.ValidateFunction, obj: any): Validation
     : { valid: false, errors: validateFn.errors };
 }
 
-export function validateNewClass(newClass: NewClassInputType): ValidationResult {
-  return validateSchema(newClassAjv, newClass);
+export function validateCreateClass(newClass: CreateClassInputType): ValidationResult {
+  return validateSchema(createClassAjv, newClass);
 }
 
-export function validateNewSchema(newSchema: NewSchemaInputType): ValidationResult {
-  return validateSchema(newSchemaAjv, newSchema);
+export function validateAddClassSchema(newSchema: AddClassSchemaInputType): ValidationResult {
+  return validateSchema(addClassSchemaAjv, newSchema);
+}
+
+export function validateCreateEntity(newEntity: CreateEntityInputType): ValidationResult {
+  return validateSchema(createEntityAjv, newEntity);
+}
+
+export function validateAddSchemaSupportToEntity(entitySchema: AddSchemaSupportToEntityInputType): ValidationResult {
+  return validateSchema(addSchemaSupportToEntityAjv, entitySchema);
 }
