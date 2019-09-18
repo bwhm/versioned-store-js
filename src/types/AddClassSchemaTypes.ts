@@ -55,3 +55,6 @@ export type AddClassSchemaOutputType = {
 
 export type PropertyNameToIndexMap =
   Map<PropertyName, PropertyIndex>;
+
+export type PropertyNameToTypeMap =
+  Map<PropertyName, PropertyTypeName>;

@@ -27,32 +27,32 @@ type ValidationResult = {
   errors?: Ajv.ErrorObject[]
 }
 
-function validateSchema (validateFn: Ajv.ValidateFunction, obj: any): ValidationResult {
-  return validateFn(obj)
+function validateSchema (validateFn: Ajv.ValidateFunction, inputData: any): ValidationResult {
+  return validateFn(inputData)
     ? { valid: true }
     : { valid: false, errors: validateFn.errors };
 }
 
-export function validateCreateClass(newClass: CreateClassInputType): ValidationResult {
-  return validateSchema(CreateClassAjv, newClass);
+export function validateCreateClass(inputData: CreateClassInputType): ValidationResult {
+  return validateSchema(CreateClassAjv, inputData);
 }
 
-export function validateAddClassSchema(newSchema: AddClassSchemaInputType): ValidationResult {
-  return validateSchema(AddClassSchemaAjv, newSchema);
+export function validateAddClassSchema(inputData: AddClassSchemaInputType): ValidationResult {
+  return validateSchema(AddClassSchemaAjv, inputData);
 }
 
-export function validateCreateEntity(newEntity: CreateEntityInputType): ValidationResult {
-  return validateSchema(CreateEntityAjv, newEntity);
+export function validateCreateEntity(inputData: CreateEntityInputType): ValidationResult {
+  return validateSchema(CreateEntityAjv, inputData);
 }
 
-export function validateAddSchemaSupportToEntity(entitySchema: AddSchemaSupportToEntityInputType): ValidationResult {
-  return validateSchema(AddSchemaSupportToEntityAjv, entitySchema);
+export function validateAddSchemaSupportToEntity(inputData: AddSchemaSupportToEntityInputType): ValidationResult {
+  return validateSchema(AddSchemaSupportToEntityAjv, inputData);
 }
 
-export function validateUpdateEntityProperties(newPropValues: UpdateEntityPropertiesInputType): ValidationResult {
-  return validateSchema(UpdateEntityPropertiesAjv, newPropValues);
+export function validateUpdateEntityProperties(inputData: UpdateEntityPropertiesInputType): ValidationResult {
+  return validateSchema(UpdateEntityPropertiesAjv, inputData);
 }
 
-export function validateRemoveEntityPropertiesAjv(propNames: RemoveEntityPropertiesInputType): ValidationResult {
-  return validateSchema(RemoveEntityPropertiesAjv, propNames);
+export function validateRemoveEntityPropertiesAjv(inputData: RemoveEntityPropertiesInputType): ValidationResult {
+  return validateSchema(RemoveEntityPropertiesAjv, inputData);
 }
