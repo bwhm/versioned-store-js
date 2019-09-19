@@ -1,20 +1,20 @@
-import { validateAddSchemaSupportToEntity } from './validate';
+import { validateUpdateEntityProperties } from './validate';
 import { ClassPropertyValue, VecClassPropertyValue } from './srml-types/versioned-store';
 import { u16 } from '@polkadot/types';
-import { AddSchemaSupportToEntityInputType, AddSchemaSupportToEntityOutputType } from './types/AddSchemaSupportToEntityTypes';
+import { UpdateEntityPropertiesInputType, UpdateEntityPropertiesOutputType } from './types/UpdateEntityPropertiesTypes';
 import { PropertyValue } from './srml-types/versioned-store/PropertyValue';
 import EntityId from './srml-types/versioned-store/EntityId';
 import { TransformationResult } from './transform';
 import { PropertyNameToIndexMap, PropertyNameToTypeMap } from './types/PropertyTypes';
 import { transformPropertyValue } from './transformPropertyValue';
 
-export function transformAddSchemaSupportToEntity(
-  inputData: AddSchemaSupportToEntityInputType,
+export function transformUpdateEntityProperties(
+  inputData: UpdateEntityPropertiesInputType,
   propIndexMap: PropertyNameToIndexMap,
   propTypeMap: PropertyNameToTypeMap
-): TransformationResult<string[], AddSchemaSupportToEntityOutputType> {
+): TransformationResult<string[], UpdateEntityPropertiesOutputType> {
   
-  const validation = validateAddSchemaSupportToEntity(inputData);
+  const validation = validateUpdateEntityProperties(inputData);
   if (!validation.valid) {
     const errCount = validation.errors.length;
     return { error: [ `Schema validation failed. ${errCount} errors.` ] };
@@ -23,7 +23,7 @@ export function transformAddSchemaSupportToEntity(
   const allErrors: string[] = [];
   const propValues: ClassPropertyValue[] = [];
 
-  inputData.propertyValues.forEach(prop => {
+  inputData.newPropertyValues.forEach(prop => {
     const { name, value } = prop;
     let propIndex: number;
     let propValue: PropertyValue;
@@ -60,8 +60,7 @@ export function transformAddSchemaSupportToEntity(
   return {
     result: {
       entity_id: new EntityId(inputData.entityId),
-      schema_id: new u16(inputData.schemaId),
-      property_values: new VecClassPropertyValue()
+      new_property_values: new VecClassPropertyValue()
     }
   }
 }

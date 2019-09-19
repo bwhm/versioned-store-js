@@ -3,7 +3,7 @@ export type CreateClassInputType = {
   description: string
 }
 
-// export type CreateClassOutputType = {
-//   name: Text,
-//   description: Text
-// }
+export type CreateClassOutputType = {
+  name: Text,
+  description: Text
+}

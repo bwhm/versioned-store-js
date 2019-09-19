@@ -53,6 +53,6 @@ export function validateUpdateEntityProperties(inputData: UpdateEntityProperties
   return validateSchema(UpdateEntityPropertiesAjv, inputData);
 }
 
-export function validateRemoveEntityPropertiesAjv(inputData: RemoveEntityPropertiesInputType): ValidationResult {
+export function validateRemoveEntityProperties(inputData: RemoveEntityPropertiesInputType): ValidationResult {
   return validateSchema(RemoveEntityPropertiesAjv, inputData);
 }
