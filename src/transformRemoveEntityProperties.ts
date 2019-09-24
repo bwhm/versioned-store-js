@@ -1,8 +1,8 @@
 import { validateRemoveEntityProperties } from './validate';
-import { VecU16 } from './srml-types/versioned-store';
+import { VecU16 } from '@joystream/types/lib/versioned-store';
 import { u16 } from '@polkadot/types';
 import { RemoveEntityPropertiesInputType, RemoveEntityPropertiesOutputType } from './types/RemoveEntityPropertiesTypes';
-import EntityId from './srml-types/versioned-store/EntityId';
+import EntityId from '@joystream/types/lib/versioned-store/EntityId';
 import { TransformationResult } from './transform';
 import { PropertyNameToIndexMap } from './types/PropertyTypes';
 

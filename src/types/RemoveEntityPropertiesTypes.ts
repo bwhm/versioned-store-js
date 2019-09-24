@@ -1,5 +1,5 @@
-import EntityId from '../srml-types/versioned-store/EntityId';
-import { VecU16 } from '../srml-types/versioned-store';
+import EntityId from '@joystream/types/lib/versioned-store/EntityId';
+import { VecU16 } from '@joystream/types/lib/versioned-store';
 import { EntityIdInputType } from './EntityIdType';
 import { PropertyName } from './PropertyTypes';
 

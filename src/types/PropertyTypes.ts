@@ -1,5 +1,6 @@
 import { EntityIdInputType } from './EntityIdType';
 import { ClassIdInputType } from './ClassIdType';
+import PropertyTypeName from '@joystream/types/lib/versioned-store/PropertyTypeName';
 
 export type PropertyName = string;
 
@@ -22,35 +23,10 @@ export type PropertyNameToTypeMap =
 
 export type PropertyInputType = {
   type: PropertyTypeName
-  required: boolean
+  required?: boolean
   name: string
   description: string
   classId?: ClassIdInputType
   maxItems?: number
   maxTextLength?: number
 };
-
-export type PropertyTypeName =
-  'None' |
-  'Bool' |
-  'Uint16' |
-  'Uint32' |
-  'Uint64' |
-  'Int16' |
-  'Int32' |
-  'Int64' |
-  'Text' |
-  'Internal' |
-
-  // Vectors:
-
-  'BoolVec' |
-  'Uint16Vec' |
-  'Uint32Vec' |
-  'Uint64Vec' |
-  'Int16Vec' |
-  'Int32Vec' |
-  'Int64Vec' |
-  'TextVec' |
-  'InternalVec'
-;

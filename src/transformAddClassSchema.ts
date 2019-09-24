@@ -1,7 +1,7 @@
 import { AddClassSchemaInputType, AddClassSchemaOutputType } from './types/AddClassSchemaTypes';
 import { validateAddClassSchema } from './validate';
-import ClassId from './srml-types/versioned-store/ClassId';
-import { Property, VecU16, VecProperty } from './srml-types/versioned-store';
+import ClassId from '@joystream/types/lib/versioned-store/ClassId';
+import { Property, VecU16, VecProperty } from '@joystream/types/lib/versioned-store';
 import { u16, Bool, Text } from '@polkadot/types';
 import { TransformationResult } from './transform';
 import { PropertyNameToIndexMap } from './types/PropertyTypes';

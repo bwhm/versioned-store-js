@@ -1,5 +1,5 @@
 import { ClassIdInputType } from './ClassIdType';
-import ClassId from '../srml-types/versioned-store/ClassId';
+import ClassId from '@joystream/types/lib/versioned-store/ClassId';
 
 export type CreateEntityInputType = {
   classId: ClassIdInputType

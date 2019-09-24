@@ -1,20 +1,21 @@
-import * as PV from './srml-types/versioned-store/PropertyValue';
-import { PropertyValue } from './srml-types/versioned-store/PropertyValue';
+import * as PV from '@joystream/types/lib/versioned-store/PropertyValue';
+import { PropertyValue } from '@joystream/types/lib/versioned-store/PropertyValue';
 import { EntityIdInputType } from './types/EntityIdType';
 import { TransformationResult } from './transform';
-import { PropertyTypeName, PropertyValueInputType } from './types/PropertyTypes';
+import { PropertyValueInputType } from './types/PropertyTypes';
+import PropertyTypeName from '@joystream/types/lib/versioned-store/PropertyTypeName';
 
 export function transformPropertyValue(propType: PropertyTypeName, value: PropertyValueInputType): TransformationResult<string, PropertyValue> {
 
   const ok = (typeEnum: PV.PropertyValueEnum) => {
-    return { result: new PropertyValue(typeEnum) };
+    return { result: new PropertyValue({ [propType]: typeEnum }) };
   }
 
   switch (propType) {
 
     // Primitives:
 
-    case 'None':        return ok(new PV.None);
+    case 'None':        return ok(new PV.None());
     case 'Bool':        return ok(new PV.Bool(value as boolean));
     case 'Uint16':      return ok(new PV.Uint16(value as number));
     case 'Uint32':      return ok(new PV.Uint32(value as number));

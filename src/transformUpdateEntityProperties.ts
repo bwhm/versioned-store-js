@@ -1,9 +1,9 @@
 import { validateUpdateEntityProperties } from './validate';
-import { ClassPropertyValue, VecClassPropertyValue } from './srml-types/versioned-store';
+import { ClassPropertyValue, VecClassPropertyValue } from '@joystream/types/lib/versioned-store';
 import { u16 } from '@polkadot/types';
 import { UpdateEntityPropertiesInputType, UpdateEntityPropertiesOutputType } from './types/UpdateEntityPropertiesTypes';
-import { PropertyValue } from './srml-types/versioned-store/PropertyValue';
-import EntityId from './srml-types/versioned-store/EntityId';
+import { PropertyValue } from '@joystream/types/lib/versioned-store/PropertyValue';
+import EntityId from '@joystream/types/lib/versioned-store/EntityId';
 import { TransformationResult } from './transform';
 import { PropertyNameToIndexMap, PropertyNameToTypeMap } from './types/PropertyTypes';
 import { transformPropertyValue } from './transformPropertyValue';

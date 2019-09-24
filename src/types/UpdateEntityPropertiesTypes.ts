@@ -1,5 +1,5 @@
-import EntityId from '../srml-types/versioned-store/EntityId';
-import { VecClassPropertyValue } from '../srml-types/versioned-store';
+import EntityId from '@joystream/types/lib/versioned-store/EntityId';
+import { VecClassPropertyValue } from '@joystream/types/lib/versioned-store';
 import { EntityIdInputType } from './EntityIdType';
 import { PropertyNameAndValueInputType } from './PropertyTypes';
 

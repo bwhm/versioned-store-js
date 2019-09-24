@@ -1,26 +1,26 @@
-import PropertyType from './srml-types/versioned-store/PropertyType';
-import * as PT from './srml-types/versioned-store/PropertyType';
+import PropertyType from '@joystream/types/lib/versioned-store/PropertyType';
+import * as PT from '@joystream/types/lib/versioned-store/PropertyType';
 import { TransformationResult } from './transform';
 import { PropertyInputType } from './types/PropertyTypes';
 
 export function transformPropertyType(prop: PropertyInputType): TransformationResult<string, PropertyType> {
 
   const ok = (typeEnum: PT.PropertyTypeEnum) => {
-    return { result: new PropertyType(typeEnum) };
+    return { result: new PropertyType({ [prop.type]: typeEnum } ) };
   }
 
   switch (prop.type) {
 
     // Primitives:
 
-    case 'None':        return ok(new PT.None);
-    case 'Bool':        return ok(new PT.Bool);
-    case 'Uint16':      return ok(new PT.Uint16);
-    case 'Uint32':      return ok(new PT.Uint32);
-    case 'Uint64':      return ok(new PT.Uint64);
-    case 'Int16':       return ok(new PT.Int16);
-    case 'Int32':       return ok(new PT.Int32);
-    case 'Int64':       return ok(new PT.Int64);
+    case 'None':        return ok(new PT.None());
+    case 'Bool':        return ok(new PT.Bool());
+    case 'Uint16':      return ok(new PT.Uint16());
+    case 'Uint32':      return ok(new PT.Uint32());
+    case 'Uint64':      return ok(new PT.Uint64());
+    case 'Int16':       return ok(new PT.Int16());
+    case 'Int32':       return ok(new PT.Int32());
+    case 'Int64':       return ok(new PT.Int64());
     case 'Text':        return ok(new PT.Text(prop.maxTextLength));
     case 'Internal':    return ok(new PT.Internal(prop.classId));
 
