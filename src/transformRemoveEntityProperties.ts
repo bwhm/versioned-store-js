@@ -3,26 +3,25 @@ import { VecU16 } from '@joystream/types/lib/versioned-store';
 import { u16 } from '@polkadot/types';
 import { RemoveEntityPropertiesInputType, RemoveEntityPropertiesOutputType } from './types/RemoveEntityPropertiesTypes';
 import EntityId from '@joystream/types/lib/versioned-store/EntityId';
-import { TransformationResult } from './transform';
-import { PropertyNameToIndexMap } from './types/PropertyTypes';
+import { TransformationResult, wrapValidationErrors } from './transform';
+import { PropertyByNameMap } from './types/PropertyTypes';
 
 export function transformRemoveEntityProperties(
   inputData: RemoveEntityPropertiesInputType,
-  propIndexMap: PropertyNameToIndexMap
+  propMap: PropertyByNameMap
 ): TransformationResult<string[], RemoveEntityPropertiesOutputType> {
   
   const validation = validateRemoveEntityProperties(inputData);
   if (!validation.valid) {
-    const errCount = validation.errors.length;
-    return { error: [ `Schema validation failed. ${errCount} errors.` ] };
+    return wrapValidationErrors(validation)
   }
 
   const allErrors: string[] = [];
   const propIds: u16[] = [];
 
   inputData.propertyNames.forEach(propName => {
-    if (propIndexMap.has(propName)) {
-      const propIndex = propIndexMap.get(propName);
+    if (propMap.has(propName)) {
+      const propIndex = propMap.get(propName).index;
       propIds.push(new u16(propIndex));
     } else {
       allErrors.push(`No property index provided for name '${propName}'.`);

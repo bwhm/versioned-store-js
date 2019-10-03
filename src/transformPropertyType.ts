@@ -33,8 +33,8 @@ export function transformPropertyType(prop: PropertyInputType): TransformationRe
     case 'Int16Vec':    return ok(new PT.Int16Vec(prop.maxItems));
     case 'Int32Vec':    return ok(new PT.Int32Vec(prop.maxItems));
     case 'Int64Vec':    return ok(new PT.Int64Vec(prop.maxItems));
-    case 'TextVec':     return ok(new PT.TextVec(prop.maxItems, prop.maxTextLength));
-    case 'InternalVec': return ok(new PT.InternalVec(prop.maxItems, prop.classId));
+    case 'TextVec':     return ok(PT.TextVec.newTypesafe(prop.maxItems, prop.maxTextLength));
+    case 'InternalVec': return ok(PT.InternalVec.newTypesafe(prop.maxItems, prop.classId));
 
     default: {
       return { error: `Unknown property type name: ${prop.type}` };

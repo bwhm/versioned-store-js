@@ -5,8 +5,8 @@ import { PropertyName, PropertyInputType } from './PropertyTypes';
 
 export type AddClassSchemaInputType = {
   classId: ClassIdInputType,
-  existingProperties: PropertyName[],
-  newProperties: PropertyInputType[]
+  existingProperties?: PropertyName[],
+  newProperties?: PropertyInputType[]
 }
 
 export type AddClassSchemaOutputType = {

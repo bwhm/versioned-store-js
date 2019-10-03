@@ -1,9 +1,10 @@
-import { transformAddClassSchema } from "./transformAddClassSchema";
-import { AddClassSchemaInputType } from './types/AddClassSchemaTypes';
+import { transformAddClassSchema } from "../transformAddClassSchema";
+import { AddClassSchemaInputType } from '../types/AddClassSchemaTypes';
+import { PropertyByNameMap } from '../types/PropertyTypes';
 
-const propMap = new Map<string, number>([
-  ['old_a', 0],
-  ['old_b', 1]
+const propMap: PropertyByNameMap = new Map([
+  ['old_a', { index: 0, type: 'Bool' }],
+  ['old_b', { index: 1, type: 'Int16' }]
 ]);
 
 const inputData: AddClassSchemaInputType = {

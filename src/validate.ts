@@ -1,4 +1,5 @@
-import * as Ajv from 'ajv';
+// tslint:disable-next-line:import-name
+import Ajv from 'ajv';
 
 import * as CreateClassSchema from './schemas/CreateClass.schema.json'
 import * as AddClassSchemaSchema from './schemas/AddClassSchema.schema.json'
@@ -15,44 +16,45 @@ import { UpdateEntityPropertiesInputType } from './types/UpdateEntityPropertiesT
 import { RemoveEntityPropertiesInputType } from './types/RemoveEntityPropertiesTypes.js'
 
 const ajv = new Ajv({ allErrors: true });
-const CreateClassAjv = ajv.compile(CreateClassSchema);
-const AddClassSchemaAjv = ajv.compile(AddClassSchemaSchema);
-const CreateEntityAjv = ajv.compile(CreateEntitySchema);
-const AddSchemaSupportToEntityAjv = ajv.compile(AddSchemaSupportToEntitySchema);
-const UpdateEntityPropertiesAjv = ajv.compile(UpdateEntityPropertiesSchema);
-const RemoveEntityPropertiesAjv = ajv.compile(RemoveEntityPropertiesSchema);
 
-type ValidationResult = {
+export type ValidationResult = {
   valid: boolean
-  errors?: Ajv.ErrorObject[]
+  errors?: string[]
 }
 
-function validateSchema (validateFn: Ajv.ValidateFunction, inputData: any): ValidationResult {
-  return validateFn(inputData)
-    ? { valid: true }
-    : { valid: false, errors: validateFn.errors };
+function validationErrorToString (error: Ajv.ErrorObject) {
+  return `data${error.dataPath} ${error.message}`;
+}
+
+function validateSchema (schema: object | string, inputData: any): ValidationResult {
+  const valid = ajv.validate(schema, inputData) as boolean
+  const errors = valid
+    ? undefined
+    : ajv.errors.map(validationErrorToString)
+
+  return { valid, errors };
 }
 
 export function validateCreateClass(inputData: CreateClassInputType): ValidationResult {
-  return validateSchema(CreateClassAjv, inputData);
+  return validateSchema(CreateClassSchema, inputData);
 }
 
 export function validateAddClassSchema(inputData: AddClassSchemaInputType): ValidationResult {
-  return validateSchema(AddClassSchemaAjv, inputData);
+  return validateSchema(AddClassSchemaSchema, inputData);
 }
 
 export function validateCreateEntity(inputData: CreateEntityInputType): ValidationResult {
-  return validateSchema(CreateEntityAjv, inputData);
+  return validateSchema(CreateEntitySchema, inputData);
 }
 
 export function validateAddSchemaSupportToEntity(inputData: AddSchemaSupportToEntityInputType): ValidationResult {
-  return validateSchema(AddSchemaSupportToEntityAjv, inputData);
+  return validateSchema(AddSchemaSupportToEntitySchema, inputData);
 }
 
 export function validateUpdateEntityProperties(inputData: UpdateEntityPropertiesInputType): ValidationResult {
-  return validateSchema(UpdateEntityPropertiesAjv, inputData);
+  return validateSchema(UpdateEntityPropertiesSchema, inputData);
 }
 
 export function validateRemoveEntityProperties(inputData: RemoveEntityPropertiesInputType): ValidationResult {
-  return validateSchema(RemoveEntityPropertiesAjv, inputData);
+  return validateSchema(RemoveEntityPropertiesSchema, inputData);
 }

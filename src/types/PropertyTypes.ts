@@ -15,11 +15,16 @@ export type PropertyNameAndValueInputType = {
   value: PropertyValueInputType
 }
 
-export type PropertyNameToIndexMap =
-  Map<PropertyName, PropertyIndex>;
+export type ProptyIndexAndType = {
+  index: PropertyIndex,
+  type: PropertyTypeName
+}
 
-export type PropertyNameToTypeMap =
-  Map<PropertyName, PropertyTypeName>;
+export type PropertyByNameMap =
+  Map<PropertyName, ProptyIndexAndType>;
+
+export type PropertyIndexToNameMap =
+  Map<PropertyIndex, PropertyName>;
 
 export type PropertyInputType = {
   type: PropertyTypeName

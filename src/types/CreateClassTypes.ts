@@ -1,3 +1,5 @@
+import { Text } from '@polkadot/types';
+
 export type CreateClassInputType = {
   name: string,
   description: string

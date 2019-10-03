@@ -23,11 +23,11 @@ yarn build
 yarn build:watch
 ```
 
-## Usage
+## CLI
 
 ```sh
 # See help on how to use this tool:
-./bench.sh -h
+./cli.sh -h
 ```
 
 ## Available scripts

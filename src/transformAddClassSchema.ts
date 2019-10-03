@@ -3,27 +3,26 @@ import { validateAddClassSchema } from './validate';
 import ClassId from '@joystream/types/lib/versioned-store/ClassId';
 import { Property, VecU16, VecProperty } from '@joystream/types/lib/versioned-store';
 import { u16, Bool, Text } from '@polkadot/types';
-import { TransformationResult } from './transform';
-import { PropertyNameToIndexMap } from './types/PropertyTypes';
+import { TransformationResult, wrapValidationErrors } from './transform';
+import { PropertyByNameMap } from './types/PropertyTypes';
 import { transformPropertyType } from './transformPropertyType';
 
 export function transformAddClassSchema(
   inputData: AddClassSchemaInputType,
-  propMap: PropertyNameToIndexMap
+  propMap: PropertyByNameMap
 ): TransformationResult<string[], AddClassSchemaOutputType> {
   
   const validation = validateAddClassSchema(inputData);
   if (!validation.valid) {
-    const errCount = validation.errors.length;
-    return { error: [ `Schema validation failed. ${errCount} errors.` ] };
+    return wrapValidationErrors(validation)
   }
 
   const allErrors: string[] = [];
 
   const existingProps: u16[] = [];
-  inputData.existingProperties.forEach(propName => {
+  inputData.existingProperties && inputData.existingProperties.forEach(propName => {
     if (propMap.has(propName)) {
-      const propIndex = propMap.get(propName);
+      const propIndex = propMap.get(propName).index;
       existingProps.push(new u16(propIndex));
     } else {
       allErrors.push(`No property index provided for name '${propName}'.`);
@@ -31,7 +30,7 @@ export function transformAddClassSchema(
   });
 
   const newProps: Property[] = [];
-  inputData.newProperties.forEach(prop => {
+  inputData.newProperties && inputData.newProperties.forEach(prop => {
     const { error, result: prop_type } = transformPropertyType(prop);
     if (error) {
       allErrors.push(error)
