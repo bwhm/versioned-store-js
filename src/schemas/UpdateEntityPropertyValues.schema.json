@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "https://joystream.org/UpdateEntityProperties.schema.schema.json",
-  "title": "UpdateEntityProperties",
+  "$id": "https://joystream.org/UpdateEntityPropertyValues.schema.schema.json",
+  "title": "UpdateEntityPropertyValues",
   "description": "JSON schema to update entity properties in Joystream network",
   "type": "object",
   "additionalProperties": false,

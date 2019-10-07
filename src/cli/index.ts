@@ -1,5 +1,9 @@
 import { arrayToMultiLineString } from './printers';
-import { validateCreateClass, validateAddClassSchema, validateCreateEntity, validateAddSchemaSupportToEntity, validateUpdateEntityProperties, validateRemoveEntityProperties } from '../validate';
+import {
+  validateCreateClass, validateAddClassSchema, validateCreateEntity,
+  validateAddSchemaSupportToEntity, validateUpdateEntityPropertyValues,
+  validateRemoveEntityProperties
+} from '../validate';
 
 const program = require('commander');
 
@@ -19,7 +23,7 @@ const ValidationFunctions = {
   validateAddClassSchema,
   validateCreateEntity,
   validateAddSchemaSupportToEntity,
-  validateUpdateEntityProperties,
+  validateUpdateEntityPropertyValues,
   validateRemoveEntityProperties
 }
 

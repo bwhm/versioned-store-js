@@ -20,7 +20,7 @@ export function transformAddSchemaSupportToEntity(
   const allErrors: string[] = [];
   const propValues: ClassPropertyValue[] = [];
 
-  // TODO refactor copypasta from 'transformUpdateEntityProperties'
+  // TODO refactor copypasta from 'transformUpdateEntityPropertyValues'
   inputData.propertyValues && inputData.propertyValues.forEach(prop => {
     const { name, value } = prop;
     

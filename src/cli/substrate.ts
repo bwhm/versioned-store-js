@@ -17,12 +17,14 @@ import PropertyTypeName from '@joystream/types/lib/versioned-store/PropertyTypeN
 
 import {
   PropertyByNameMap, CreateClassInputType, AddClassSchemaInputType,
-  CreateEntityInputType, AddSchemaSupportToEntityInputType, UpdateEntityPropertiesInputType, RemoveEntityPropertiesInputType
+  CreateEntityInputType, AddSchemaSupportToEntityInputType,
+  UpdateEntityPropertyValuesInputType, RemoveEntityPropertiesInputType
 } from '../types';
 
-import { transformCreateClass, transformAddClassSchema,
+import {
+  transformCreateClass, transformAddClassSchema,
   transformCreateEntity, transformAddSchemaSupportToEntity,
-  transformUpdateEntityProperties, transformRemoveEntityProperties
+  transformUpdateEntityPropertyValues, transformRemoveEntityProperties
 } from '../transform';
 
 export type KeypairProps = {
@@ -292,13 +294,13 @@ export class Substrate {
     console.log(`Tx executed:`, greenItem(txName))
   }
 
-  public txUpdateEntityProperties = async (input: UpdateEntityPropertiesInputType) => {
-    const txName = 'testUpdateEntityProperties'
+  public txUpdateEntityPropertyValues = async (input: UpdateEntityPropertyValuesInputType) => {
+    const txName = 'testUpdateEntityPropertyValues'
 
     const entityId = new EntityId(input.entityId)
     const entity = await this.getEntityById(entityId)
     const propMap = await this.getClassPropertyMap(entity.class_id)
-    const { error, result } = transformUpdateEntityProperties(input, propMap)
+    const { error, result } = transformUpdateEntityPropertyValues(input, propMap)
 
     if (error) {
       console.log(`Cannot parse input data for tx '${txName}'`, error)

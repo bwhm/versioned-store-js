@@ -1,18 +1,18 @@
-import { validateUpdateEntityProperties } from './validate';
+import { validateUpdateEntityPropertyValues } from './validate';
 import { ClassPropertyValue, VecClassPropertyValue } from '@joystream/types/lib/versioned-store';
 import { u16 } from '@polkadot/types';
-import { UpdateEntityPropertiesInputType, UpdateEntityPropertiesOutputType } from './types/UpdateEntityPropertiesTypes';
+import { UpdateEntityPropertyValuesInputType, UpdateEntityPropertyValuesOutputType } from './types/UpdateEntityPropertyValuesTypes';
 import EntityId from '@joystream/types/lib/versioned-store/EntityId';
 import { TransformationResult, wrapValidationErrors } from './transform';
 import { PropertyByNameMap } from './types/PropertyTypes';
 import { transformPropertyValue } from './transformPropertyValue';
 
-export function transformUpdateEntityProperties(
-  inputData: UpdateEntityPropertiesInputType,
+export function transformUpdateEntityPropertyValues(
+  inputData: UpdateEntityPropertyValuesInputType,
   propMap: PropertyByNameMap
-): TransformationResult<string[], UpdateEntityPropertiesOutputType> {
+): TransformationResult<string[], UpdateEntityPropertyValuesOutputType> {
   
-  const validation = validateUpdateEntityProperties(inputData);
+  const validation = validateUpdateEntityPropertyValues(inputData);
   if (!validation.valid) {
     return wrapValidationErrors(validation)
   }

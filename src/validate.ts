@@ -5,14 +5,14 @@ import * as CreateClassSchema from './schemas/CreateClass.schema.json'
 import * as AddClassSchemaSchema from './schemas/AddClassSchema.schema.json'
 import * as CreateEntitySchema from './schemas/CreateEntity.schema.json'
 import * as AddSchemaSupportToEntitySchema from './schemas/AddSchemaSupportToEntity.schema.json'
-import * as UpdateEntityPropertiesSchema from './schemas/UpdateEntityProperties.schema.json'
+import * as UpdateEntityPropertyValuesSchema from './schemas/UpdateEntityPropertyValues.schema.json'
 import * as RemoveEntityPropertiesSchema from './schemas/RemoveEntityProperties.schem.json'
 
 import { CreateClassInputType } from './types/CreateClassTypes.js';
 import { AddClassSchemaInputType } from './types/AddClassSchemaTypes.js';
 import { CreateEntityInputType } from './types/CreateEntityTypes.js';
 import { AddSchemaSupportToEntityInputType } from './types/AddSchemaSupportToEntityTypes.js';
-import { UpdateEntityPropertiesInputType } from './types/UpdateEntityPropertiesTypes.js'
+import { UpdateEntityPropertyValuesInputType } from './types/UpdateEntityPropertyValuesTypes.js'
 import { RemoveEntityPropertiesInputType } from './types/RemoveEntityPropertiesTypes.js'
 
 const ajv = new Ajv({ allErrors: true });
@@ -51,8 +51,8 @@ export function validateAddSchemaSupportToEntity(inputData: AddSchemaSupportToEn
   return validateSchema(AddSchemaSupportToEntitySchema, inputData);
 }
 
-export function validateUpdateEntityProperties(inputData: UpdateEntityPropertiesInputType): ValidationResult {
-  return validateSchema(UpdateEntityPropertiesSchema, inputData);
+export function validateUpdateEntityPropertyValues(inputData: UpdateEntityPropertyValuesInputType): ValidationResult {
+  return validateSchema(UpdateEntityPropertyValuesSchema, inputData);
 }
 
 export function validateRemoveEntityProperties(inputData: RemoveEntityPropertiesInputType): ValidationResult {
