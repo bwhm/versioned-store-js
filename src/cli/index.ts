@@ -1,8 +1,7 @@
 import { arrayToMultiLineString } from './printers';
 import {
   validateCreateClass, validateAddClassSchema, validateCreateEntity,
-  validateAddSchemaSupportToEntity, validateUpdateEntityPropertyValues,
-  validateRemoveEntityProperties
+  validateAddSchemaSupportToEntity, validateUpdateEntityPropertyValues
 } from '../validate';
 
 const program = require('commander');
@@ -23,8 +22,7 @@ const ValidationFunctions = {
   validateAddClassSchema,
   validateCreateEntity,
   validateAddSchemaSupportToEntity,
-  validateUpdateEntityPropertyValues,
-  validateRemoveEntityProperties
+  validateUpdateEntityPropertyValues
 }
 
 const ValidationFunctionNames = Object.keys(ValidationFunctions)

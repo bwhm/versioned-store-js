@@ -16,15 +16,12 @@ import { Class, Entity } from '@joystream/types/lib/versioned-store';
 import PropertyTypeName from '@joystream/types/lib/versioned-store/PropertyTypeName';
 
 import {
-  PropertyByNameMap, CreateClassInputType, AddClassSchemaInputType,
-  CreateEntityInputType, AddSchemaSupportToEntityInputType,
-  UpdateEntityPropertyValuesInputType, RemoveEntityPropertiesInputType
+  PropertyByNameMap, CreateClassInputType, AddClassSchemaInputType, CreateEntityInputType, AddSchemaSupportToEntityInputType, UpdateEntityPropertyValuesInputType
 } from '../types';
 
 import {
-  transformCreateClass, transformAddClassSchema,
-  transformCreateEntity, transformAddSchemaSupportToEntity,
-  transformUpdateEntityPropertyValues, transformRemoveEntityProperties
+  transformCreateClass, transformAddClassSchema, transformCreateEntity,
+  transformAddSchemaSupportToEntity, transformUpdateEntityPropertyValues
 } from '../transform';
 
 export type KeypairProps = {
@@ -311,29 +308,6 @@ export class Substrate {
       this.vsTx()[txName](
         result.entity_id,
         result.new_property_values
-      )
-    )
-    console.log(`Tx executed:`, greenItem(txName))
-  }
-
-  public txRemoveEntityProperties
-  = async (input: RemoveEntityPropertiesInputType) => {
-    const txName = 'testRemoveEntityProperties'
-
-    const entityId = new EntityId(input.entityId)
-    const entity = await this.getEntityById(entityId)
-    const propMap = await this.getClassPropertyMap(entity.class_id)
-    const { error, result } = transformRemoveEntityProperties(input, propMap)
-
-    if (error) {
-      console.log(`Cannot parse input data for tx '${txName}'`, error)
-      return
-    }
-
-    await this.signTxAndSend(
-      this.vsTx()[txName](
-        result.entity_id,
-        result.property_ids
       )
     )
     console.log(`Tx executed:`, greenItem(txName))
