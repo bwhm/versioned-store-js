@@ -14,6 +14,7 @@ import ClassId from '@joystream/types/lib/versioned-store/ClassId';
 import EntityId from '@joystream/types/lib/versioned-store/EntityId';
 import { Class, Entity } from '@joystream/types/lib/versioned-store';
 import PropertyTypeName from '@joystream/types/lib/versioned-store/PropertyTypeName';
+import { EventData } from '@polkadot/types/type/Event';
 
 import {
   PropertyByNameMap, CreateClassInputType, AddClassSchemaInputType, CreateEntityInputType, AddSchemaSupportToEntityInputType, UpdateEntityPropertyValuesInputType
@@ -165,19 +166,19 @@ export class Substrate {
     return await this.vsQuery().entityById(id) as unknown as Entity
   }
   
-  private signTxAndSend = async (tx: SubmittableExtrinsic<CodecResult, SubscriptionResult>) => {
+  private signTxAndSend = async (tx: SubmittableExtrinsic<CodecResult, SubscriptionResult>, interestingEventName?: string): Promise<EventData | undefined> => {
     
     const balance = await this.accountBalance()
     console.log(`Account balance:`, balance.toString(), 'tokens')
     if (balance.lt(new BN(1))) {
       console.log(`Not enough tokens to execute a tx`)
-      return
+      return undefined
     }
 
     // Get the nonce for this account:
     const nonce = await this.api.query.system.accountNonce(this.keypair.address()) as unknown as Uint8Array;
 
-    await new Promise((resolve, reject) => tx
+    return await new Promise<EventData>((resolve, reject) => tx
       .sign(this.keypair, { nonce })
       .send(({ events = [], status }) => {
         console.log('Transaction status:', status.type);
@@ -186,12 +187,15 @@ export class Substrate {
           console.log('Completed at block hash', status.asFinalized.toHex());
           console.log('Events:');
 
+          let eventData: EventData = undefined
           events.forEach(({ phase, event: { data, method, section } }) => {
             console.log('\t', phase.toString(), `: ${section}.${method}`, data.toString());
+            if (interestingEventName && interestingEventName === method) {
+              eventData = data
+            }
           });
 
-          // process.exit(0);
-          resolve()
+          resolve(eventData)
         }
       }).catch(reject)
     )
@@ -217,16 +221,18 @@ export class Substrate {
 
     if (error) {
       console.log(`Cannot parse input data for tx '${txName}'`, error)
-      return
+      return undefined
     }
 
-    await this.signTxAndSend(
+    const res = await this.signTxAndSend(
       this.vsTx()[txName](
         result.name,
         result.description
-      )
+      ),
+      'ClassCreated'
     )
     console.log(`Tx executed:`, greenItem(txName))
+    return res
   }
 
   public txAddClassSchema = async (input: AddClassSchemaInputType) => {
@@ -238,17 +244,19 @@ export class Substrate {
 
     if (error) {
       console.log(`Cannot parse input data for tx '${txName}'`, error)
-      return
+      return undefined
     }
 
-    await this.signTxAndSend(
+    const res = await this.signTxAndSend(
       this.vsTx()[txName](
         result.class_id,
         result.existing_properties,
         result.new_properties
-      )
+      ),
+      'ClassSchemaAdded'
     )
     console.log(`Tx executed:`, greenItem(txName))
+    return res
   }
 
   public txCreateEntity = async (input: CreateEntityInputType) => {
@@ -257,15 +265,17 @@ export class Substrate {
 
     if (error) {
       console.log(`Cannot parse input data for tx '${txName}'`, error)
-      return
+      return undefined
     }
 
-    await this.signTxAndSend(
+    const res = await this.signTxAndSend(
       this.vsTx()[txName](
         result.class_id
-      )
+      ),
+      'EntityCreated'
     )
     console.log(`Tx executed:`, greenItem(txName))
+    return res
   }
 
   public txAddSchemaSupportToEntity = async (input: AddSchemaSupportToEntityInputType) => {
@@ -278,17 +288,19 @@ export class Substrate {
 
     if (error) {
       console.log(`Cannot parse input data for tx '${txName}'`, error)
-      return
+      return undefined
     }
 
-    await this.signTxAndSend(
+    const res = await this.signTxAndSend(
       this.vsTx()[txName](
         result.entity_id,
         result.schema_id,
         result.property_values
-      )
+      ),
+      'EntitySchemaAdded'
     )
     console.log(`Tx executed:`, greenItem(txName))
+    return res
   }
 
   public txUpdateEntityPropertyValues = async (input: UpdateEntityPropertyValuesInputType) => {
@@ -301,15 +313,17 @@ export class Substrate {
 
     if (error) {
       console.log(`Cannot parse input data for tx '${txName}'`, error)
-      return
+      return undefined
     }
 
-    await this.signTxAndSend(
+    const res = await this.signTxAndSend(
       this.vsTx()[txName](
         result.entity_id,
         result.new_property_values
-      )
+      ),
+      'EntityPropertiesUpdated'
     )
     console.log(`Tx executed:`, greenItem(txName))
+    return res
   }
 }

@@ -22,7 +22,8 @@ async function main() {
     name: 'Podcast',
     description: 'Desc of podcast class'
   }
-  await sub.txCreateClass(newClass)
+  const newClassEvent = await sub.txCreateClass(newClass)
+  console.log({ newClassRes: newClassEvent })
 
   // Get all class ids
   // ------------------------------------------
