@@ -5,8 +5,7 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import { Keyring } from '@polkadot/keyring';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { KeypairType } from '@polkadot/util-crypto/types';
-import { CodecResult, SubscriptionResult } from '@polkadot/api/promise/types';
-import { SubmittableExtrinsic } from '@polkadot/api/SubmittableExtrinsic';
+import { SubmittableExtrinsic } from '@polkadot/api/promise/types';
 
 import { RpcEndpoints, greenItem } from './utils';
 import { registerJoystreamTypes } from '@joystream/types';
@@ -14,7 +13,7 @@ import ClassId from '@joystream/types/lib/versioned-store/ClassId';
 import EntityId from '@joystream/types/lib/versioned-store/EntityId';
 import { Class, Entity } from '@joystream/types/lib/versioned-store';
 import PropertyTypeName from '@joystream/types/lib/versioned-store/PropertyTypeName';
-import { EventData } from '@polkadot/types/type/Event';
+import { EventData } from '@polkadot/types/primitive/Generic/Event';
 
 import {
   PropertyByNameMap, CreateClassInputType, AddClassSchemaInputType, CreateEntityInputType, AddSchemaSupportToEntityInputType, UpdateEntityPropertyValuesInputType
@@ -24,6 +23,8 @@ import {
   transformCreateClass, transformAddClassSchema, transformCreateEntity,
   transformAddSchemaSupportToEntity, transformUpdateEntityPropertyValues
 } from '../transform';
+
+
 
 export type KeypairProps = {
 
@@ -39,7 +40,7 @@ export type KeypairProps = {
 export class Substrate {
 
   protected api: ApiPromise
-  
+
   protected keypair: KeyringPair
 
   constructor () {}
@@ -53,7 +54,7 @@ export class Substrate {
 
     // Create the API and wait until ready:
     console.log(`Connecting to Substrate API: ${rpcEndpoint}`)
-    this.api = await ApiPromise.create(provider);
+    this.api = await ApiPromise.create({provider});
 
     // Retrieve the chain & node information information via rpc calls
     const system = this.api.rpc.system;
@@ -93,7 +94,7 @@ export class Substrate {
 
     const keypair = keyring.addFromUri(props.uri, null, props.type)
 
-    if (keypair.isLocked()) {
+    if (keypair.isLocked) {
       if (props.pass) {
         keypair.decodePkcs8(props.pass);
       } else {
@@ -104,7 +105,7 @@ export class Substrate {
 
     console.log(`Next account will be used for signing txs:`,
       {
-        address: keypair.address(),
+        address: keypair.address,
         type: keypair.type
       }
     )
@@ -113,7 +114,7 @@ export class Substrate {
   }
 
   public accountAddress = () => {
-    return this.keypair.address()
+    return this.keypair.address
   }
 
   public accountBalance = async () => {
@@ -165,9 +166,9 @@ export class Substrate {
   public getEntityById = async (id: EntityId | number): Promise<Entity> => {
     return await this.vsQuery().entityById(id) as unknown as Entity
   }
-  
-  private signTxAndSend = async (tx: SubmittableExtrinsic<CodecResult, SubscriptionResult>, interestingEventName?: string): Promise<EventData | undefined> => {
-    
+
+  private signTxAndSend = async (tx: SubmittableExtrinsic, interestingEventName?: string): Promise<EventData | undefined> => {
+
     const balance = await this.accountBalance()
     console.log(`Account balance:`, balance.toString(), 'tokens')
     if (balance.lt(new BN(1))) {
@@ -176,7 +177,7 @@ export class Substrate {
     }
 
     // Get the nonce for this account:
-    const nonce = await this.api.query.system.accountNonce(this.keypair.address()) as unknown as Uint8Array;
+    const nonce = await this.api.query.system.accountNonce(this.keypair.address) as unknown as Uint8Array;
 
     return await new Promise<EventData>((resolve, reject) => tx
       .sign(this.keypair, { nonce })
@@ -227,7 +228,7 @@ export class Substrate {
     const res = await this.signTxAndSend(
       this.vsTx()[txName](
         result.name,
-        result.description
+        result.description,
       ),
       'ClassCreated'
     )
@@ -249,10 +250,10 @@ export class Substrate {
 
     const res = await this.signTxAndSend(
       this.vsTx()[txName](
-        result.class_id,
+        result.class_id.toHex(),
         result.existing_properties,
-        result.new_properties
-      ),
+        result.new_properties,
+      ), // without toHex we are getting a Call not SubmittableExtrinsic ?
       'ClassSchemaAdded'
     )
     console.log(`Tx executed:`, greenItem(txName))
@@ -270,7 +271,7 @@ export class Substrate {
 
     const res = await this.signTxAndSend(
       this.vsTx()[txName](
-        result.class_id
+        result.class_id.toHex()
       ),
       'EntityCreated'
     )
@@ -293,8 +294,8 @@ export class Substrate {
 
     const res = await this.signTxAndSend(
       this.vsTx()[txName](
-        result.entity_id,
-        result.schema_id,
+        result.entity_id.toHex(),
+        result.schema_id.toHex(),
         result.property_values
       ),
       'EntitySchemaAdded'
@@ -318,7 +319,7 @@ export class Substrate {
 
     const res = await this.signTxAndSend(
       this.vsTx()[txName](
-        result.entity_id,
+        result.entity_id.toHex(),
         result.new_property_values
       ),
       'EntityPropertiesUpdated'

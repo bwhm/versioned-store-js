@@ -2,7 +2,7 @@ import { AddClassSchemaInputType, AddClassSchemaOutputType } from './types/AddCl
 import { validateAddClassSchema } from './validate';
 import ClassId from '@joystream/types/lib/versioned-store/ClassId';
 import { Property, VecU16, VecProperty } from '@joystream/types/lib/versioned-store';
-import { u16, Bool, Text } from '@polkadot/types';
+import { u16, bool as Bool, Text } from '@polkadot/types';
 import { TransformationResult, wrapValidationErrors } from './transform';
 import { PropertyByNameMap } from './types/PropertyTypes';
 import { transformPropertyType } from './transformPropertyType';
@@ -11,7 +11,7 @@ export function transformAddClassSchema(
   inputData: AddClassSchemaInputType,
   propMap: PropertyByNameMap
 ): TransformationResult<string[], AddClassSchemaOutputType> {
-  
+
   const validation = validateAddClassSchema(inputData);
   if (!validation.valid) {
     return wrapValidationErrors(validation)
