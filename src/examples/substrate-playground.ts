@@ -1,10 +1,29 @@
 import { Substrate } from "../cli/substrate";
 import { arrayToOneLineString, prettyClass, prettyEntity } from '../cli/printers';
 import { AddClassSchemaInputType } from '../types/AddClassSchemaTypes';
+import ClassPermissions from '@joystream/types/lib/versioned-store/permissions/ClassPermissions';
+import EntityPermissions from '@joystream/types/lib/versioned-store/permissions/EntityPermissions';
+import { CredentialSet, Credential } from '@joystream/types/lib/versioned-store/permissions/credentials';
+import { bool, u32, Option } from '@polkadot/types';
+import { ReferenceConstraint, NoConstraint } from '@joystream/types/lib/versioned-store/permissions/reference-constraint';
 
 const classId = 1
 const entityId = 1
 const schemaId = 0
+const CREDENTIAL_ONE = new u32(1);
+
+const CLASS_PERMISSIONS = new ClassPermissions({
+  entity_permissions: new EntityPermissions({
+    update: new CredentialSet([CREDENTIAL_ONE]),
+    maintainer_has_all_permissions: new bool(true),
+  }),
+  entities_can_be_created: new bool(true),
+  add_schemas: new CredentialSet([CREDENTIAL_ONE]),
+  create_entities: new CredentialSet([CREDENTIAL_ONE]),
+  reference_constraint: new ReferenceConstraint({'NoConstraint': new NoConstraint()}),
+  admins: new CredentialSet([CREDENTIAL_ONE]),
+  last_permissions_update: new u32(0), // BlockNumber
+});
 
 // tslint:disable-next-line:max-func-body-length
 async function main() {
@@ -15,6 +34,8 @@ async function main() {
     type: 'sr25519'
   })
 
+  // const ALICE = sub.keypair.address;
+
   // Create class
   // ------------------------------------------
 
@@ -22,7 +43,9 @@ async function main() {
     name: 'Podcast',
     description: 'Desc of podcast class'
   }
-  const newClassEvent = await sub.txCreateClass(newClass)
+
+  // make a Sudo call, via Alice
+  const newClassEvent = await sub.txCreateClass(newClass, CLASS_PERMISSIONS)
   console.log({ newClassRes: newClassEvent })
 
   // Get all class ids
@@ -63,13 +86,13 @@ async function main() {
       }
     ]
   };
-  await sub.txAddClassSchema(newClassSchema)
+  await sub.txAddClassSchema(newClassSchema, new Option(Credential, CREDENTIAL_ONE))
 
   // Create new entity
   // ------------------------------------------
 
   const newEntity = { classId }
-  await sub.txCreateEntity(newEntity)
+  await sub.txCreateEntity(newEntity, new Option(Credential, CREDENTIAL_ONE))
 
   // Add schema support to entity
   // ------------------------------------------
@@ -95,7 +118,7 @@ async function main() {
       }
     ]
   }
-  await sub.txAddSchemaSupportToEntity(schema_with_values)
+  await sub.txAddSchemaSupportToEntity(schema_with_values, new Option(Credential, CREDENTIAL_ONE), true)
 
   // Get Class
   // ------------------------------------------
@@ -122,7 +145,7 @@ async function main() {
 
   const entityAsText = await prettyEntity(entity, sub)
   console.log(`Entity by id`, entityId, entityAsText)
-  
+
   sub.disconnect();
 }
 

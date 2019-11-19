@@ -14,6 +14,9 @@ import EntityId from '@joystream/types/lib/versioned-store/EntityId';
 import { Class, Entity } from '@joystream/types/lib/versioned-store';
 import PropertyTypeName from '@joystream/types/lib/versioned-store/PropertyTypeName';
 import { EventData } from '@polkadot/types/primitive/Generic/Event';
+import ClassPermissions from '@joystream/types/lib/versioned-store/permissions/ClassPermissions'
+import { Credential } from '@joystream/types/lib/versioned-store/permissions/credentials';
+import { Option } from '@polkadot/types';
 
 import {
   PropertyByNameMap, CreateClassInputType, AddClassSchemaInputType, CreateEntityInputType, AddSchemaSupportToEntityInputType, UpdateEntityPropertyValuesInputType
@@ -39,9 +42,9 @@ export type KeypairProps = {
 
 export class Substrate {
 
-  protected api: ApiPromise
+  api: ApiPromise
 
-  protected keypair: KeyringPair
+  keypair: KeyringPair
 
   constructor () {}
 
@@ -80,7 +83,7 @@ export class Substrate {
   }
 
   private vsTx = () => {
-    return this.api.tx.versionedStore;
+    return this.api.tx.versionedStorePermissions;
   }
 
   public setKeypair = (props: KeypairProps) => {
@@ -216,8 +219,8 @@ export class Substrate {
     return map
   }
 
-  public txCreateClass = async (input: CreateClassInputType) => {
-    const txName = 'testCreateClass'
+  public txCreateClassWithDefaultPermissions = async (input: CreateClassInputType) => {
+    const txName = 'createClassWithDefaultPermissions'
     const { error, result } = transformCreateClass(input)
 
     if (error) {
@@ -236,8 +239,29 @@ export class Substrate {
     return res
   }
 
-  public txAddClassSchema = async (input: AddClassSchemaInputType) => {
-    const txName = 'testAddClassSchema'
+  public txCreateClass = async (input: CreateClassInputType, classPermissions: ClassPermissions) => {
+    const txName = 'createClass'
+    const { error, result } = transformCreateClass(input)
+
+    if (error) {
+      console.log(`Cannot parse input data for tx '${txName}'`, error)
+      return undefined
+    }
+
+    const res = await this.signTxAndSend(
+      this.vsTx()[txName](
+        result.name,
+        result.description,
+        classPermissions,
+      ),
+      'ClassCreated'
+    )
+    console.log(`Tx executed:`, greenItem(txName))
+    return res
+  }
+
+  public txAddClassSchema = async (input: AddClassSchemaInputType, withCredentials: Option<Credential>) => {
+    const txName = 'addClassSchema'
 
     const classId = new ClassId(input.classId)
     const propMap = await this.getClassPropertyMap(classId)
@@ -250,18 +274,19 @@ export class Substrate {
 
     const res = await this.signTxAndSend(
       this.vsTx()[txName](
+        withCredentials,
         result.class_id.toHex(),
         result.existing_properties,
         result.new_properties,
-      ), // without toHex we are getting a Call not SubmittableExtrinsic ?
+      ),
       'ClassSchemaAdded'
     )
     console.log(`Tx executed:`, greenItem(txName))
     return res
   }
 
-  public txCreateEntity = async (input: CreateEntityInputType) => {
-    const txName = 'testCreateEntity'
+  public txCreateEntity = async (input: CreateEntityInputType, withCredentials: Option<Credential>) => {
+    const txName = 'createEntity'
     const { error, result } = transformCreateEntity(input)
 
     if (error) {
@@ -271,6 +296,7 @@ export class Substrate {
 
     const res = await this.signTxAndSend(
       this.vsTx()[txName](
+        withCredentials,
         result.class_id.toHex()
       ),
       'EntityCreated'
@@ -279,8 +305,8 @@ export class Substrate {
     return res
   }
 
-  public txAddSchemaSupportToEntity = async (input: AddSchemaSupportToEntityInputType) => {
-    const txName = 'testAddSchemaSupportToEntity'
+  public txAddSchemaSupportToEntity = async (input: AddSchemaSupportToEntityInputType, withCredentials: Option<Credential>, as_maintainer: boolean) => {
+    const txName = 'addSchemaSupportToEntity'
 
     const entityId = new EntityId(input.entityId)
     const entity = await this.getEntityById(entityId)
@@ -294,9 +320,11 @@ export class Substrate {
 
     const res = await this.signTxAndSend(
       this.vsTx()[txName](
+        withCredentials,
+        as_maintainer,
         result.entity_id.toHex(),
         result.schema_id.toHex(),
-        result.property_values
+        result.property_values,
       ),
       'EntitySchemaAdded'
     )
@@ -304,8 +332,8 @@ export class Substrate {
     return res
   }
 
-  public txUpdateEntityPropertyValues = async (input: UpdateEntityPropertyValuesInputType) => {
-    const txName = 'testUpdateEntityPropertyValues'
+  public txUpdateEntityPropertyValues = async (input: UpdateEntityPropertyValuesInputType, withCredentials: Option<Credential>, as_maintainer: boolean) => {
+    const txName = 'updateEntityPropertyValues'
 
     const entityId = new EntityId(input.entityId)
     const entity = await this.getEntityById(entityId)
@@ -319,6 +347,8 @@ export class Substrate {
 
     const res = await this.signTxAndSend(
       this.vsTx()[txName](
+        withCredentials,
+        as_maintainer,
         result.entity_id.toHex(),
         result.new_property_values
       ),
