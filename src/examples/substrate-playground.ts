@@ -4,8 +4,15 @@ import { AddClassSchemaInputType } from '../types/AddClassSchemaTypes';
 import ClassPermissions from '@joystream/types/lib/versioned-store/permissions/ClassPermissions';
 import EntityPermissions from '@joystream/types/lib/versioned-store/permissions/EntityPermissions';
 import { CredentialSet, Credential } from '@joystream/types/lib/versioned-store/permissions/credentials';
-import { bool, u32, Option } from '@polkadot/types';
+import { bool, u32, u16, Option, Vec } from '@polkadot/types';
 import { ReferenceConstraint, NoConstraint } from '@joystream/types/lib/versioned-store/permissions/reference-constraint';
+import { OperationType} from '@joystream/types/lib/versioned-store/permissions/batching/operation-types';
+import { Operation } from '@joystream/types/lib/versioned-store/permissions/batching/';
+import ClassId from '@joystream/types/lib/versioned-store/ClassId';
+import { ParametrizedEntity } from '@joystream/types/lib/versioned-store/permissions/batching/parametrized-entity';
+import { ParametrizedPropertyValue } from '@joystream/types/lib/versioned-store/permissions/batching/parametrized-property-value';
+import { Text as TextValue, TextVec as TextVecValue } from '@joystream/types/lib/versioned-store/PropertyValue';
+import ParametrizedClassPropertyValue from '@joystream/types/lib/versioned-store/permissions/batching/ParametrizedClassPropertyValue';
 
 const CREDENTIAL_ONE = new u32(1);
 
@@ -172,6 +179,45 @@ async function main() {
   const classPermissionsTuple = await sub.vsPermissionsQuery.classPermissionsByClassId(classId) as ClassPermissions;
   // console.log(classPermissionsTuple[0]);
   console.log('admins:', classPermissionsTuple[0].admins);
+
+  /// Create entities using batching operations
+
+  // Batch Operations to execute in order..
+  let batch: Vec<Operation> = new Vec(Operation, /*[op1, op2, ...]*/);
+
+  // First operation - index 0
+  batch.push(new Operation({
+    with_credential: new Option(Credential, CREDENTIAL_ONE),
+    as_entity_maintainer: new bool(true),
+    operation_type: OperationType.CreateEntity(new ClassId(classId))
+  }));
+
+  // Second operation - index 1
+  batch.push(new Operation({
+    with_credential: new Option(Credential, CREDENTIAL_ONE),
+    as_entity_maintainer: new bool(true),
+    operation_type: OperationType.AddSchemaSupportToEntity(
+      // entity created in first operation (index 0)
+      ParametrizedEntity.InternalEntityJustAdded(new u32(0)),
+      new u16(0), // schema 0
+      new Vec(ParametrizedClassPropertyValue, [
+        // property 0
+        new ParametrizedClassPropertyValue({
+          in_class_index: new u16(0),
+          value: ParametrizedPropertyValue.PropertyValue({'Text': new TextValue('Dave')})
+        }),
+        // property 1
+        new ParametrizedClassPropertyValue({
+          in_class_index: new u16(1),
+          value: ParametrizedPropertyValue.PropertyValue({'TextVec': new TextVecValue(['Eve', 'Freddie'])})
+        })
+      ])
+    )
+  }));
+
+  // execute the batch - since all the opeartions are executed with one account
+  // that account must have permissions for all operations.
+  await sub.signTxAndSend(sub.vsTx.transaction(batch));
 
   sub.disconnect();
 }

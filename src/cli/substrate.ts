@@ -28,7 +28,6 @@ import {
 } from '../transform';
 
 
-
 export type KeypairProps = {
 
   // Example: '//Alice'
@@ -58,6 +57,8 @@ export class Substrate {
     // Create the API and wait until ready:
     console.log(`Connecting to Substrate API: ${rpcEndpoint}`)
     this.api = await ApiPromise.create({provider});
+
+    await this.api.isReady;
 
     // Retrieve the chain & node information information via rpc calls
     const system = this.api.rpc.system;
