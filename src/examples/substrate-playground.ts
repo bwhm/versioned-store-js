@@ -4,10 +4,8 @@ import { AddClassSchemaInputType } from '../types/AddClassSchemaTypes';
 import ClassPermissions from '@joystream/types/lib/versioned-store/permissions/ClassPermissions';
 import EntityPermissions from '@joystream/types/lib/versioned-store/permissions/EntityPermissions';
 import { CredentialSet, Credential } from '@joystream/types/lib/versioned-store/permissions/credentials';
-import { bool, u32, Option, u16 } from '@polkadot/types';
+import { bool, u32, Option } from '@polkadot/types';
 import { ReferenceConstraint, NoConstraint } from '@joystream/types/lib/versioned-store/permissions/reference-constraint';
-import ClassId from '@joystream/types/lib/versioned-store/ClassId';
-import EntityId from '@joystream/types/lib/versioned-store/EntityId';
 
 const CREDENTIAL_ONE = new u32(1);
 
@@ -43,11 +41,7 @@ async function main() {
     description: 'Desc of podcast class'
   }
 
-  // make a Sudo call, via Alice
-  const newClassEvent = await sub.txCreateClass(newClass, CLASS_PERMISSIONS)
-  console.log({ newClassRes: newClassEvent })
-
-  let classId = (newClassEvent[0] as any as ClassId).toNumber()
+  const classId = await sub.txCreateClass(newClass, CLASS_PERMISSIONS)
 
   // Get all class ids
   // ------------------------------------------
@@ -88,15 +82,13 @@ async function main() {
     ]
   };
 
-  let addClassSchemaEventData = await sub.txAddClassSchema(newClassSchema, new Option(Credential, CREDENTIAL_ONE))
-  let schemaId = (addClassSchemaEventData[1] as any as u16).toNumber();
+  const schemaId = await sub.txAddClassSchema(newClassSchema, new Option(Credential, CREDENTIAL_ONE))
 
   // Create new entity
   // ------------------------------------------
 
   const newEntity = { classId }
-  let createEntityEventData = await sub.txCreateEntity(newEntity, new Option(Credential, CREDENTIAL_ONE))
-  let entityId = (createEntityEventData[0] as any as EntityId).toNumber();
+  const entityId = await sub.txCreateEntity(newEntity, new Option(Credential, CREDENTIAL_ONE))
 
   // Add schema support to entity
   // ------------------------------------------

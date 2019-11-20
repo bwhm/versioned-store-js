@@ -16,7 +16,7 @@ import PropertyTypeName from '@joystream/types/lib/versioned-store/PropertyTypeN
 import { EventData } from '@polkadot/types/primitive/Generic/Event';
 import ClassPermissions from '@joystream/types/lib/versioned-store/permissions/ClassPermissions'
 import { Credential } from '@joystream/types/lib/versioned-store/permissions/credentials';
-import { Option } from '@polkadot/types';
+import { Option, u16 } from '@polkadot/types';
 
 import {
   PropertyByNameMap, CreateClassInputType, AddClassSchemaInputType, CreateEntityInputType, AddSchemaSupportToEntityInputType, UpdateEntityPropertyValuesInputType
@@ -253,7 +253,7 @@ export class Substrate {
       return undefined
     }
 
-    const res = await this.signTxAndSend(
+    const classCreatedEventData = await this.signTxAndSend(
       this.vsTx[txName](
         result.name,
         result.description,
@@ -262,7 +262,9 @@ export class Substrate {
       'ClassCreated'
     )
     console.log(`Tx executed:`, greenItem(txName))
-    return res
+    console.log({ classCreatedEventData })
+
+    return (classCreatedEventData[0] as any as ClassId).toNumber()
   }
 
   public txAddClassSchema = async (input: AddClassSchemaInputType, withCredentials: Option<Credential>) => {
@@ -277,7 +279,7 @@ export class Substrate {
       return undefined
     }
 
-    const res = await this.signTxAndSend(
+    const classSchemaAddedEventData = await this.signTxAndSend(
       this.vsTx[txName](
         withCredentials,
         result.class_id.toHex(),
@@ -287,7 +289,7 @@ export class Substrate {
       'ClassSchemaAdded'
     )
     console.log(`Tx executed:`, greenItem(txName))
-    return res
+    return (classSchemaAddedEventData[1] as any as u16).toNumber();
   }
 
   public txCreateEntity = async (input: CreateEntityInputType, withCredentials: Option<Credential>) => {
@@ -299,15 +301,15 @@ export class Substrate {
       return undefined
     }
 
-    const res = await this.signTxAndSend(
+    const entityCreatedEventData = await this.signTxAndSend(
       this.vsTx[txName](
         withCredentials,
-        result.class_id.toHex()
+        result.class_id.toNumber()
       ),
       'EntityCreated'
     )
     console.log(`Tx executed:`, greenItem(txName))
-    return res
+    return (entityCreatedEventData[0] as any as EntityId).toNumber();
   }
 
   public txAddSchemaSupportToEntity = async (input: AddSchemaSupportToEntityInputType, withCredentials: Option<Credential>, as_maintainer: boolean) => {
@@ -327,8 +329,8 @@ export class Substrate {
       this.vsTx[txName](
         withCredentials,
         as_maintainer,
-        result.entity_id.toHex(),
-        result.schema_id.toHex(),
+        result.entity_id.toNumber(),
+        result.schema_id.toNumber(),
         result.property_values,
       ),
       'EntitySchemaAdded'
@@ -354,7 +356,7 @@ export class Substrate {
       this.vsTx[txName](
         withCredentials,
         as_maintainer,
-        result.entity_id.toHex(),
+        result.entity_id.toNumber(),
         result.new_property_values
       ),
       'EntityPropertiesUpdated'
