@@ -78,12 +78,17 @@ export class Substrate {
   /**
    * Shortcut for versioned store query.
    */
-  private vsQuery = () => {
+  get vsQuery () {
     return this.api.query.versionedStore;
   }
 
-  private vsTx = () => {
+  get vsTx () {
     return this.api.tx.versionedStorePermissions;
+  }
+
+  // Make a dispatchable call via sudo. Assumes this.keypair was set with the sudo key
+  public makeSudoCall (tx: SubmittableExtrinsic, interestingEventName?: string) {
+    return this.signTxAndSend(this.api.tx.sudo.sudo(tx), interestingEventName);
   }
 
   public setKeypair = (props: KeypairProps) => {
@@ -125,15 +130,15 @@ export class Substrate {
   }
 
   public nextClassId = async () => {
-    return await this.vsQuery().nextClassId() as unknown as ClassId
+    return await this.vsQuery.nextClassId() as unknown as ClassId
   }
 
   public nextEntityId = async () => {
-    return await this.vsQuery().nextEntityId() as unknown as EntityId
+    return await this.vsQuery.nextEntityId() as unknown as EntityId
   }
 
   public getAllClassIds = async (): Promise<ClassId[]> => {
-    const nextId = await this.vsQuery().nextClassId() as unknown as ClassId;
+    const nextId = await this.vsQuery.nextClassId() as unknown as ClassId;
 
     if (!nextId || nextId.lte(new BN(1))) {
       return [];
@@ -148,7 +153,7 @@ export class Substrate {
   }
 
   public getAllEntityIds = async (): Promise<EntityId[]> => {
-    const nextId = await this.vsQuery().nextEntityId() as unknown as EntityId;
+    const nextId = await this.vsQuery.nextEntityId() as unknown as EntityId;
 
     if (!nextId || nextId.lte(new BN(1))) {
       return [];
@@ -163,14 +168,14 @@ export class Substrate {
   }
 
   public getClassById = async (id: ClassId | number): Promise<Class> => {
-    return await this.vsQuery().classById(id) as unknown as Class
+    return await this.vsQuery.classById(id) as unknown as Class
   }
 
   public getEntityById = async (id: EntityId | number): Promise<Entity> => {
-    return await this.vsQuery().entityById(id) as unknown as Entity
+    return await this.vsQuery.entityById(id) as unknown as Entity
   }
 
-  private signTxAndSend = async (tx: SubmittableExtrinsic, interestingEventName?: string): Promise<EventData | undefined> => {
+  public signTxAndSend = async (tx: SubmittableExtrinsic, interestingEventName?: string): Promise<EventData | undefined> => {
 
     const balance = await this.accountBalance()
     console.log(`Account balance:`, balance.toString(), 'tokens')
@@ -229,7 +234,7 @@ export class Substrate {
     }
 
     const res = await this.signTxAndSend(
-      this.vsTx()[txName](
+      this.vsTx[txName](
         result.name,
         result.description,
       ),
@@ -249,7 +254,7 @@ export class Substrate {
     }
 
     const res = await this.signTxAndSend(
-      this.vsTx()[txName](
+      this.vsTx[txName](
         result.name,
         result.description,
         classPermissions,
@@ -273,7 +278,7 @@ export class Substrate {
     }
 
     const res = await this.signTxAndSend(
-      this.vsTx()[txName](
+      this.vsTx[txName](
         withCredentials,
         result.class_id.toHex(),
         result.existing_properties,
@@ -295,7 +300,7 @@ export class Substrate {
     }
 
     const res = await this.signTxAndSend(
-      this.vsTx()[txName](
+      this.vsTx[txName](
         withCredentials,
         result.class_id.toHex()
       ),
@@ -319,7 +324,7 @@ export class Substrate {
     }
 
     const res = await this.signTxAndSend(
-      this.vsTx()[txName](
+      this.vsTx[txName](
         withCredentials,
         as_maintainer,
         result.entity_id.toHex(),
@@ -346,7 +351,7 @@ export class Substrate {
     }
 
     const res = await this.signTxAndSend(
-      this.vsTx()[txName](
+      this.vsTx[txName](
         withCredentials,
         as_maintainer,
         result.entity_id.toHex(),

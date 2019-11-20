@@ -4,12 +4,11 @@ import { AddClassSchemaInputType } from '../types/AddClassSchemaTypes';
 import ClassPermissions from '@joystream/types/lib/versioned-store/permissions/ClassPermissions';
 import EntityPermissions from '@joystream/types/lib/versioned-store/permissions/EntityPermissions';
 import { CredentialSet, Credential } from '@joystream/types/lib/versioned-store/permissions/credentials';
-import { bool, u32, Option } from '@polkadot/types';
+import { bool, u32, Option, u16 } from '@polkadot/types';
 import { ReferenceConstraint, NoConstraint } from '@joystream/types/lib/versioned-store/permissions/reference-constraint';
+import ClassId from '@joystream/types/lib/versioned-store/ClassId';
+import EntityId from '@joystream/types/lib/versioned-store/EntityId';
 
-const classId = 1
-const entityId = 1
-const schemaId = 0
 const CREDENTIAL_ONE = new u32(1);
 
 const CLASS_PERMISSIONS = new ClassPermissions({
@@ -21,7 +20,7 @@ const CLASS_PERMISSIONS = new ClassPermissions({
   add_schemas: new CredentialSet([CREDENTIAL_ONE]),
   create_entities: new CredentialSet([CREDENTIAL_ONE]),
   reference_constraint: new ReferenceConstraint({'NoConstraint': new NoConstraint()}),
-  admins: new CredentialSet([CREDENTIAL_ONE]),
+  admins: new CredentialSet([]),
   last_permissions_update: new u32(0), // BlockNumber
 });
 
@@ -47,6 +46,8 @@ async function main() {
   // make a Sudo call, via Alice
   const newClassEvent = await sub.txCreateClass(newClass, CLASS_PERMISSIONS)
   console.log({ newClassRes: newClassEvent })
+
+  let classId = (newClassEvent[0] as any as ClassId).toNumber()
 
   // Get all class ids
   // ------------------------------------------
@@ -86,13 +87,16 @@ async function main() {
       }
     ]
   };
-  await sub.txAddClassSchema(newClassSchema, new Option(Credential, CREDENTIAL_ONE))
+
+  let addClassSchemaEventData = await sub.txAddClassSchema(newClassSchema, new Option(Credential, CREDENTIAL_ONE))
+  let schemaId = (addClassSchemaEventData[1] as any as u16).toNumber();
 
   // Create new entity
   // ------------------------------------------
 
   const newEntity = { classId }
-  await sub.txCreateEntity(newEntity, new Option(Credential, CREDENTIAL_ONE))
+  let createEntityEventData = await sub.txCreateEntity(newEntity, new Option(Credential, CREDENTIAL_ONE))
+  let entityId = (createEntityEventData[0] as any as EntityId).toNumber();
 
   // Add schema support to entity
   // ------------------------------------------
@@ -118,7 +122,27 @@ async function main() {
       }
     ]
   }
+
   await sub.txAddSchemaSupportToEntity(schema_with_values, new Option(Credential, CREDENTIAL_ONE), true)
+
+  const new_property_values ={
+    entityId,
+    newPropertyValues: [
+      {
+        name: 'author',
+        value: 'Dave'
+      },
+      {
+        name: 'guests',
+        value: [
+          'Eve',
+          'Freddie'
+        ]
+      }
+    ]
+  }
+
+  await sub.txUpdateEntityPropertyValues(new_property_values, new Option(Credential, CREDENTIAL_ONE), true)
 
   // Get Class
   // ------------------------------------------
@@ -145,6 +169,11 @@ async function main() {
 
   const entityAsText = await prettyEntity(entity, sub)
   console.log(`Entity by id`, entityId, entityAsText)
+
+  // Update the class permissions with sudo call
+  await sub.makeSudoCall(
+    sub.vsTx.setClassAdmins(classId, new CredentialSet([CREDENTIAL_ONE]))
+  );
 
   sub.disconnect();
 }
