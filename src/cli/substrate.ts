@@ -82,6 +82,10 @@ export class Substrate {
     return this.api.query.versionedStore;
   }
 
+  get vsPermissionsQuery () {
+    return this.api.query.versionedStorePermissions;
+  }
+
   get vsTx () {
     return this.api.tx.versionedStorePermissions;
   }

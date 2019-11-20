@@ -167,6 +167,12 @@ async function main() {
     sub.vsTx.setClassAdmins(classId, new CredentialSet([CREDENTIAL_ONE]))
   );
 
+  // linked_map so return value is a Tuple(ClassPermissions, Linkage)
+  // Linkage provides: previous and next of type Option<ClassId> to provide iteration
+  const classPermissionsTuple = await sub.vsPermissionsQuery.classPermissionsByClassId(classId) as ClassPermissions;
+  // console.log(classPermissionsTuple[0]);
+  console.log('admins:', classPermissionsTuple[0].admins);
+
   sub.disconnect();
 }
 
