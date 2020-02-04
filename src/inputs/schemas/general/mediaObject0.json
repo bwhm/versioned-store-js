@@ -1,0 +1,12 @@
+{
+  "classId": "Media Object",
+  "newProperties": [
+    {
+      "name": "Value",
+      "description": "ContentId of object in the data directory",
+      "type": "Text",
+      "required": true,
+      "maxTextLength": 68
+    }
+  ]
+}
