@@ -19,6 +19,12 @@ export function arrayToOneLineString(array: any[] | void) {
   return `[${inner}]`
 }
 
+export function classNameList (x?: Class | void) {
+  if (!x) return undefined
+
+  return x.name.toString()
+}
+
 function bnsToNumbers<T extends BN>(bns: T[]): number[] {
   return !bns ? [] : bns.map(x => x.toNumber())
 }

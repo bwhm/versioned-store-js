@@ -35,3 +35,13 @@ export type PropertyInputType = {
   maxItems?: number
   maxTextLength?: number
 };
+
+export type PropertyInputByClassNameType = {
+  type: PropertyTypeName
+  required?: boolean
+  name: string
+  description: string
+  classId?: string
+  maxItems?: number
+  maxTextLength?: number
+};
