@@ -6,7 +6,6 @@ import { Keyring } from '@polkadot/keyring';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { KeypairType } from '@polkadot/util-crypto/types';
 import { SubmittableExtrinsic } from '@polkadot/api/promise/types';
-
 import { RpcEndpoints, greenItem } from './utils';
 import { registerJoystreamTypes } from '@joystream/types';
 import ClassId from '@joystream/types/lib/versioned-store/ClassId';
@@ -19,7 +18,10 @@ import { Credential } from '@joystream/types/lib/versioned-store/permissions/cre
 import { Option, u16 } from '@polkadot/types';
 
 import {
-  PropertyByNameMap, CreateClassInputType, AddClassSchemaInputType, CreateEntityInputType, AddSchemaSupportToEntityInputType, UpdateEntityPropertyValuesInputType
+  PropertyByNameMap, PropertyIndexToNameMap, 
+  CreateClassInputType, ClassIdToNameMap, ClassNameToIdMap, ClassIdToNameAndSchemasMap,
+  AddClassSchemaInputType,
+  CreateEntityInputType, AddSchemaSupportToEntityInputType, UpdateEntityPropertyValuesInputType
 } from '../types';
 
 import {
@@ -210,9 +212,85 @@ export class Substrate {
           });
 
           resolve(eventData)
+          //returns undefined for batched TXes. 
+          //How about returning an array of all entityIds in the batch?
         }
       }).catch(reject)
     )
+  }
+
+  public classIdToNameMap = async (): Promise<ClassIdToNameMap> => {
+    const classIds = await this.getAllClassIds()
+    const ids = (`${classIds}`).split(",").map(Number);
+    const map: ClassIdToNameMap = new Map();
+    for (let i=0; i<classIds.length; i++) {
+      const clazz = await this.getClassById(classIds[i])
+      map.set(ids[i],clazz.name.toString())
+    }
+    return map
+  }
+
+  public classIdToNameAndSchemasMap = async (): Promise<ClassIdToNameAndSchemasMap> => {
+    const classIds = await this.getAllClassIds()
+    const ids = (`${classIds}`).split(",").map(Number);
+    const map: ClassIdToNameAndSchemasMap = new Map();
+    for (let i=0; i<classIds.length; i++) {
+      const schemaIds: number[] = []
+      const clazz = await this.getClassById(classIds[i])
+      const className = clazz.name.toString()
+      for (let n=0; n<clazz.schemas.length; n++) {
+        schemaIds.push(n)
+      }
+      map.set(ids[i], { className, schemaIds })
+    }
+    return map
+  }
+
+  public classNameToIdMap = async (): Promise<ClassNameToIdMap> => {
+    const classIdsToNameMap = await this.classIdToNameMap()
+
+    const map: ClassNameToIdMap = new Map();
+    for (let n of Array.from(classIdsToNameMap.keys()) ) {
+      map.set(classIdsToNameMap.get(n), n)
+    }
+    return map
+  }
+
+  public entitiyIdsInClass = async (classIdinput:ClassId): Promise<EntityId[]> => {
+    const classId = classIdinput
+    const classMap = await this.classIdToNameMap()
+    if (!classMap.has(classId.toNumber())) {
+      throw new Error(`Class not found by id ${classId.toNumber()}`)
+    } else {
+      const entityIds = await this.getAllEntityIds()
+      const entityIdArray: EntityId[] = []
+      for (let i=0; i<entityIds.length; i++) {
+        const entity = await this.getEntityById(entityIds[i])
+        if (entity.class_id.toNumber() === classId.toNumber()) {
+          const entityId = entity.id
+          entityIdArray.push(entityId)
+        }
+      }
+      return entityIdArray
+    }
+  }
+
+  public entitiesInClass = async (classIdinput:ClassId): Promise<Entity[]> => {
+    const classId = classIdinput
+    const classMap = await this.classIdToNameMap()
+    if (!classMap.has(classId.toNumber())) {
+      throw new Error(`Class not found by id ${classId.toNumber()}`)
+    } else {
+      const entityIds = await this.getAllEntityIds()
+      const entityArray: Entity[] = []
+      for (let i=0; i<entityIds.length; i++) {
+        const entity = await this.getEntityById(entityIds[i])
+        if (entity.class_id.toNumber() === classId.toNumber()) {
+          entityArray.push(entity)
+        }
+      }
+      return entityArray
+    }
   }
 
   public getClassPropertyMap = async (classId: ClassId): Promise<PropertyByNameMap> => {
@@ -227,6 +305,40 @@ export class Substrate {
       map.set(prop.name.toString(), { index, type })
     })
     return map
+  }
+
+  public propIndexToNameMap = async (classId: ClassId): Promise<PropertyIndexToNameMap> => {
+    const clazz = await this.getClassById(classId)
+    if (!clazz || clazz.id.isZero()) {
+      throw new Error(`Class not found by id ${classId.toNumber()}`)
+    }
+    const items = clazz.properties
+    return new Map(items.map((x, i) => [i, x.name]))
+  }
+
+  public getClassSchemaPropertyMap = async (classId: ClassId, schemaId: number): Promise<PropertyByNameMap> => {
+    const clazz = await this.getClassById(classId)
+    if (!clazz || clazz.id.isZero()) {
+      throw new Error(`Class not found by id ${classId.toNumber()}`)
+    }
+    if (clazz.schemas[schemaId] === undefined) {
+      throw new Error(`Schema version ${schemaId} for classId ${classId.toNumber()} doesn't exist`)
+    }
+    const propMap = await this.getClassPropertyMap(classId)
+    const indexPropMap = await this.propIndexToNameMap(classId)
+
+    const inClassIndexSchemaProps:number[] = []
+    for (let i=0; i<clazz.schemas[schemaId].properties.length; i++) {
+      inClassIndexSchemaProps.push(clazz.schemas[schemaId].properties[i].toNumber())
+    }
+    const map = propMap
+
+    for (let n of Array.from(indexPropMap.keys()) ) {
+      if (!inClassIndexSchemaProps.includes(n)) {
+      map.delete(indexPropMap.get(n))
+      }
+    }
+   return map
   }
 
   public txCreateClassWithDefaultPermissions = async (input: CreateClassInputType) => {
@@ -267,7 +379,7 @@ export class Substrate {
       'ClassCreated'
     )
     console.log(`Tx executed:`, greenItem(txName))
-    console.log({ classCreatedEventData })
+    //console.log({ classCreatedEventData })
 
     return (classCreatedEventData[0] as any as ClassId).toNumber()
   }
@@ -294,7 +406,7 @@ export class Substrate {
       'ClassSchemaAdded'
     )
     console.log(`Tx executed:`, greenItem(txName))
-    return (classSchemaAddedEventData[1] as any as u16).toNumber();
+    return [(classSchemaAddedEventData[0] as any as ClassId).toNumber(),(classSchemaAddedEventData[1] as any as u16).toNumber()];
   }
 
   public txCreateEntity = async (input: CreateEntityInputType, withCredentials: Option<Credential>) => {

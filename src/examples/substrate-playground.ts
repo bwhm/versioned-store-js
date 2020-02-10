@@ -89,7 +89,9 @@ async function main() {
     ]
   };
 
-  const schemaId = await sub.txAddClassSchema(newClassSchema, new Option(Credential, CREDENTIAL_ONE))
+  const addClassSchema = await sub.txAddClassSchema(newClassSchema, new Option(Credential, CREDENTIAL_ONE))
+
+  const schemaId = addClassSchema[1]
 
   // Create new entity
   // ------------------------------------------

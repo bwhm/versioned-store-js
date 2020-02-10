@@ -12,6 +12,9 @@ export function transformAddClassSchema(
   propMap: PropertyByNameMap
 ): TransformationResult<string[], AddClassSchemaOutputType> {
 
+  const classIdToNumber = Number(inputData.classId)
+  inputData.classId = classIdToNumber
+
   const validation = validateAddClassSchema(inputData);
   if (!validation.valid) {
     return wrapValidationErrors(validation)

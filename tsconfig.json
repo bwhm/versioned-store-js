@@ -22,6 +22,8 @@
   },
   "include": [
     "src/**/*",
+    "src/inputs/***/**/*",
+    //"inputs/src/**/*",
     "__tests__/**/*"
   ]
 }
