@@ -3,11 +3,11 @@ import ClassPermissions from '@joystream/types/lib/versioned-store/permissions/C
 import EntityPermissions from '@joystream/types/lib/versioned-store/permissions/EntityPermissions';
 import { CredentialSet } from '@joystream/types/lib/versioned-store/permissions/credentials';
 import { bool, u32 } from '@polkadot/types';
-import { ReferenceConstraint, NoConstraint } from '@joystream/types/lib/versioned-store/permissions/reference-constraint';
+import { ReferenceConstraint, /* NoConstraint */ } from '@joystream/types/lib/versioned-store/permissions/reference-constraint';
 
 const CREDENTIAL_ONE = new u32(1);
 
-const CLASS_PERMISSIONS_ = new ClassPermissions({
+export const CLASS_PERMISSIONS = new ClassPermissions({
   entity_permissions: new EntityPermissions({
     update: new CredentialSet([CREDENTIAL_ONE]),
     maintainer_has_all_permissions: new bool(true),
@@ -15,7 +15,7 @@ const CLASS_PERMISSIONS_ = new ClassPermissions({
   entities_can_be_created: new bool(true),
   add_schemas: new CredentialSet([CREDENTIAL_ONE]),
   create_entities: new CredentialSet([CREDENTIAL_ONE]),
-  reference_constraint: new ReferenceConstraint({'NoConstraint': new NoConstraint()}),
+  reference_constraint: ReferenceConstraint.NoConstraint(), //({'NoConstraint': new NoConstraint()}),
   admins: new CredentialSet([]),
   last_permissions_update: new u32(0), // BlockNumber
 });

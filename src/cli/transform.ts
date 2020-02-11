@@ -8,23 +8,9 @@ import { ClassIdInputType,
    } from '../types';
 import { EntityIdInputType } from '../types/EntityIdType';
 import { validateAddSchemaSupportToEntity } from '../validate';
+import { convertToCamelCase } from './utils';
 
 const entitityValueLists:PropertyValueInputType[][] = require('../inputs/entity-values/lists/index')
-/*
-function convertFromCamelCase(input:string) {
-  return input
-  .replace(/([A-Z])/g, ' $1')
-  .replace(/^./, function(str){ return str.toUpperCase(); })
-}
-*/
-
-function convertToCamelCase(input:string) {
-  return input
-  .replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
-    if (+match === 0) return ""; // or if (/\s+/.test(match)) for white spaces
-    return index == 0 ? match.toLowerCase() : match.toUpperCase();
-  });
-}
 
 export function generateEntityJsonSchemaFromList(className:string, schemaId:number, propertyNames:string[]) {
 
@@ -67,7 +53,7 @@ export function generateEntityJsonSchemaFromList(className:string, schemaId:numb
           }
           //entities.push(schema_with_values)
         //for (let m=0; m<entitityValueLists["entityValueList"][i][camelCaseClassName].length; m++) {
-        //for (let n=0; n<propertyNames.length; n++) { 
+        //for (let n=0; n<propertyNames.length; n++) {
       }
     }
   }

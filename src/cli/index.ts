@@ -1,5 +1,9 @@
 import { Substrate } from './substrate';
 
+import {
+  stringToArray, stringToText, convertFromCamelCase
+} from './utils';
+
 import { arrayToMultiLineString } from './printers';
 import {
   validateCreateClass, validateAddClassSchema, validateCreateEntity,
@@ -9,7 +13,7 @@ import {
 import {
   getPropertyInClassMap as PropertyInClassMap,
   getPropertyInClassSchemaMap as PropertyInClassSchemaMap,
-  getRequiredPropertyInClassMap as RequiredPropertyInClassMap, 
+  getRequiredPropertyInClassMap as RequiredPropertyInClassMap,
   getRequiredPropertyInClassSchemaMap as RequiredPropertyInClassSchemaMap,
   getClassIdToNameMap as ClassIdToNameMap,
   getClassNameToIdMap as ClassNameToIdMap,
@@ -37,7 +41,7 @@ import {
   addSchemaSupportToEntity as AddSchemaSupportToEntity
 } from './update-entities'
 
-import { 
+import {
   createClassQuestions as ClassQ
   /*,
   createSchemaQ1 as SchemaQ1,
@@ -103,8 +107,8 @@ program
   .command(`get <cmd>`)
   .description(`get class and schema data from chain`)
   .arguments(`
-    [classId] as int >= 1. 
-    [schemaId] as int>=0. 
+    [classId] as int >= 1.
+    [schemaId] as int>=0.
     [entityId] as int >= 1.
   `)
   .action( async (cmd:string, arg1:string, arg2?:string) => {
@@ -200,7 +204,7 @@ program
     console.log()
     console.log(`   EntityIdNumberInClass <classId>
                       <classId> as int >= 1.`)
-    console.log()    
+    console.log()
     console.log(`   TotalEntitiesClass <classId>
                       <classId> as int >= 1.`)
     console.log()
@@ -325,7 +329,7 @@ program
     console.log(`   Class <className> <classDescription>;
                       <className> name of class (in camelCase).
                       <classDescription> description of class (in camelCase).`)
-    console.log()                  
+    console.log()
     console.log(`   EntityJsonFromList <className> <schemaId> <propertyNames>
                       <className> name of class (in camelCase).
                       <schemaId> as int>=0.
@@ -373,33 +377,6 @@ function myParseInt(value) {
   return parseInt(value);
 }
 
-function stringToArray(input:string) {
-  const array:string[] = []
-  input.split(',').forEach((value:string) => { 
-    array.push(value)
-  })
-  return array
-}
-
-function stringToText(input:string) {
-  return input
-  .replace(/%/g," ")
-}
-
-function convertFromCamelCase(input:string) {
-  return input
-  .replace(/([A-Z])/g, ' $1')
-  .replace(/^./, function(str){ return str.toUpperCase(); })
-}
-
-function convertToCamelCase(input:string) {
-  return input
-  .replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
-    if (+match === 0) return ""; // or if (/\s+/.test(match)) for white spaces
-    return index == 0 ? match.toLowerCase() : match.toUpperCase();
-  });
-}
-
 const ValidationFunctions = {
   validateCreateClass,
   validateAddClassSchema,
@@ -437,7 +414,7 @@ const GenerateJsonSchemas = {
 const UpdateEntities = {
   ClassJson,
   ClassSchemaJsonFromClassName
-} 
+}
 
 const ValidationFunctionNames = Object.keys(ValidationFunctions)
 const GetNames = Object.keys(GetInfoFromChain)
