@@ -16,19 +16,27 @@ import {
   CURRENT_LEAD_CREDENTIAL, ANY_CURATOR_CREDENTIAL, ANY_CHANNEL_OWNER_CREDENTIAL
 } from './credentials';
 
-const CLASS_PERMISSIONS = new ClassPermissions({
-  entity_permissions: new EntityPermissions({
-    update: new CredentialSet([CURRENT_LEAD_CREDENTIAL, ANY_CURATOR_CREDENTIAL]),
-    maintainer_has_all_permissions: new bool(true),
-  }),
-  entities_can_be_created: new bool(true),
-  add_schemas: new CredentialSet([CURRENT_LEAD_CREDENTIAL]),
-  // for general classes no need for channel owners to create entities?
-  create_entities: new CredentialSet([CURRENT_LEAD_CREDENTIAL, ANY_CURATOR_CREDENTIAL, ANY_CHANNEL_OWNER_CREDENTIAL]),
-  reference_constraint: ReferenceConstraint.NoConstraint(),
-  admins: new CredentialSet([CURRENT_LEAD_CREDENTIAL]),
-  last_permissions_update: new u32(0), // BlockNumber
-});
+// take newClassInputType arg
+function makeClassPermissions (newClass: CreateClassInputType) {
+  let createEntitiesCredentials = [CURRENT_LEAD_CREDENTIAL, ANY_CURATOR_CREDENTIAL];
+
+  if (newClass.channel_owners_can_create_entity) {
+    createEntitiesCredentials.push(ANY_CHANNEL_OWNER_CREDENTIAL)
+  }
+
+  return new ClassPermissions({
+    entity_permissions: new EntityPermissions({
+      update: new CredentialSet([CURRENT_LEAD_CREDENTIAL, ANY_CURATOR_CREDENTIAL]),
+      maintainer_has_all_permissions: new bool(true),
+    }),
+    entities_can_be_created: new bool(true),
+    add_schemas: new CredentialSet([CURRENT_LEAD_CREDENTIAL]),
+    create_entities: new CredentialSet(createEntitiesCredentials),
+    reference_constraint: ReferenceConstraint.NoConstraint(),
+    admins: new CredentialSet([CURRENT_LEAD_CREDENTIAL]),
+    last_permissions_update: new u32(0), // BlockNumber
+  });
+}
 
 const createClasses = process.argv[2] as string
 const addSchemas = process.argv[3] as string
@@ -86,7 +94,7 @@ async function main() {
   // Create classes drom imported JSON(s)
   for (let classItem in newClasses){
     const newClass = newClasses[classItem];
-    const newClassCreatedEvent = await sub.txCreateClass(newClass, CLASS_PERMISSIONS)
+    const newClassCreatedEvent = await sub.txCreateClass(newClass, makeClassPermissions(newClass))
     newClassesAffected.push(newClassCreatedEvent)
     allClassIds.push(newClassCreatedEvent)
     allClassNames.push(newClasses[classItem].name)
