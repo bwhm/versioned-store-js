@@ -4,8 +4,8 @@ import { AddClassSchemaInputType } from '../types/AddClassSchemaTypes';
 import ClassPermissions from '@joystream/types/lib/versioned-store/permissions/ClassPermissions';
 import EntityPermissions from '@joystream/types/lib/versioned-store/permissions/EntityPermissions';
 import { CredentialSet, Credential } from '@joystream/types/lib/versioned-store/permissions/credentials';
-import { bool, u32, u16, Option, Vec } from '@polkadot/types';
-import { ReferenceConstraint, NoConstraint } from '@joystream/types/lib/versioned-store/permissions/reference-constraint';
+import { bool, u64, u32, u16, Option, Vec } from '@polkadot/types';
+import { ReferenceConstraint } from '@joystream/types/lib/versioned-store/permissions/reference-constraint';
 import { OperationType} from '@joystream/types/lib/versioned-store/permissions/batching/operation-types';
 import { Operation } from '@joystream/types/lib/versioned-store/permissions/batching/';
 import ClassId from '@joystream/types/lib/versioned-store/ClassId';
@@ -14,17 +14,17 @@ import { ParametrizedPropertyValue } from '@joystream/types/lib/versioned-store/
 import { Text as TextValue, TextVec as TextVecValue } from '@joystream/types/lib/versioned-store/PropertyValue';
 import ParametrizedClassPropertyValue from '@joystream/types/lib/versioned-store/permissions/batching/ParametrizedClassPropertyValue';
 
-const CREDENTIAL_ONE = new u32(1);
+const CURRENT_LEAD_CREDENTIAL = new u64(0);
 
 const CLASS_PERMISSIONS = new ClassPermissions({
   entity_permissions: new EntityPermissions({
-    update: new CredentialSet([CREDENTIAL_ONE]),
+    update: new CredentialSet([CURRENT_LEAD_CREDENTIAL]),
     maintainer_has_all_permissions: new bool(true),
   }),
   entities_can_be_created: new bool(true),
-  add_schemas: new CredentialSet([CREDENTIAL_ONE]),
-  create_entities: new CredentialSet([CREDENTIAL_ONE]),
-  reference_constraint: new ReferenceConstraint({'NoConstraint': new NoConstraint()}),
+  add_schemas: new CredentialSet([CURRENT_LEAD_CREDENTIAL]),
+  create_entities: new CredentialSet([CURRENT_LEAD_CREDENTIAL]),
+  reference_constraint: ReferenceConstraint.NoConstraint(),
   admins: new CredentialSet([]),
   last_permissions_update: new u32(0), // BlockNumber
 });
@@ -89,7 +89,7 @@ async function main() {
     ]
   };
 
-  const addClassSchema = await sub.txAddClassSchema(newClassSchema, new Option(Credential, CREDENTIAL_ONE))
+  const addClassSchema = await sub.txAddClassSchema(newClassSchema, new Option(Credential, CURRENT_LEAD_CREDENTIAL))
 
   const schemaId = addClassSchema[1]
 
@@ -97,7 +97,7 @@ async function main() {
   // ------------------------------------------
 
   const newEntity = { classId }
-  const entityId = await sub.txCreateEntity(newEntity, new Option(Credential, CREDENTIAL_ONE))
+  const entityId = await sub.txCreateEntity(newEntity, new Option(Credential, CURRENT_LEAD_CREDENTIAL))
 
   // Add schema support to entity
   // ------------------------------------------
@@ -124,7 +124,7 @@ async function main() {
     ]
   }
 
-  await sub.txAddSchemaSupportToEntity(schema_with_values, new Option(Credential, CREDENTIAL_ONE), true)
+  await sub.txAddSchemaSupportToEntity(schema_with_values, new Option(Credential, CURRENT_LEAD_CREDENTIAL), true)
 
   const new_property_values ={
     entityId,
@@ -143,7 +143,7 @@ async function main() {
     ]
   }
 
-  await sub.txUpdateEntityPropertyValues(new_property_values, new Option(Credential, CREDENTIAL_ONE), true)
+  await sub.txUpdateEntityPropertyValues(new_property_values, new Option(Credential, CURRENT_LEAD_CREDENTIAL), true)
 
   // Get Class
   // ------------------------------------------
@@ -173,7 +173,7 @@ async function main() {
 
   // Update the class permissions with sudo call
   await sub.makeSudoCall(
-    sub.vsTx.setClassAdmins(classId, new CredentialSet([CREDENTIAL_ONE]))
+    sub.vsTx.setClassAdmins(classId, new CredentialSet([CURRENT_LEAD_CREDENTIAL]))
   );
 
   // linked_map so return value is a Tuple(ClassPermissions, Linkage)
@@ -189,14 +189,14 @@ async function main() {
 
   // First operation - index 0
   batch.push(new Operation({
-    with_credential: new Option(Credential, CREDENTIAL_ONE),
+    with_credential: new Option(Credential, CURRENT_LEAD_CREDENTIAL),
     as_entity_maintainer: new bool(true),
     operation_type: OperationType.CreateEntity(new ClassId(classId))
   }));
 
   // Second operation - index 1
   batch.push(new Operation({
-    with_credential: new Option(Credential, CREDENTIAL_ONE),
+    with_credential: new Option(Credential, CURRENT_LEAD_CREDENTIAL),
     as_entity_maintainer: new bool(true),
     operation_type: OperationType.AddSchemaSupportToEntity(
       // entity created in first operation (index 0)

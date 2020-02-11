@@ -16,21 +16,9 @@ import { PropertyValueEnumValue } from '@joystream/types/lib/versioned-store/Pro
 
 import entityJsons = require('../inputs/entity-values/update-entities/index.js');
 
-const CREDENTIAL_ONE = new u32(1);
-/*
-const CLASS_PERMISSIONS = new ClassPermissions({
-  entity_permissions: new EntityPermissions({
-    update: new CredentialSet([CREDENTIAL_ONE]),
-    maintainer_has_all_permissions: new bool(true),
-  }),
-  entities_can_be_created: new bool(true),
-  add_schemas: new CredentialSet([CREDENTIAL_ONE]),
-  create_entities: new CredentialSet([CREDENTIAL_ONE]),
-  reference_constraint: new ReferenceConstraint({'NoConstraint': new NoConstraint()}),
-  admins: new CredentialSet([]),
-  last_permissions_update: new u32(0), // BlockNumber
-});
-*/
+import {
+  CURRENT_LEAD_CREDENTIAL
+} from './credentials';
 
 
 const classNamesInput = process.argv[2] as string
@@ -66,7 +54,7 @@ console.log("entitityInput",entitityInput)
 
 // async function
 async function main() {
-  const sub = new Substrate(); 
+  const sub = new Substrate();
   await sub.connect();
   sub.setKeypair({
     uri: '//Alice',
@@ -76,7 +64,7 @@ async function main() {
   const classMap = await checkForDuplicateExistingClassNames(sub)
   console.log('classes',classMap)
   const classNameToIdMap = await sub.classNameToIdMap()
-  
+
   const classIds = []
   const classPropertyMaps: PropertyByNameMap[] = []
   for (let i=0; i<classNameArray.length; i++) {
@@ -129,7 +117,7 @@ async function main() {
         }))
       }
       batch.push(new Operation({
-        with_credential: new Option(Credential, CREDENTIAL_ONE),
+        with_credential: new Option(Credential, CURRENT_LEAD_CREDENTIAL),
         as_entity_maintainer: new bool(true),
         operation_type: OperationType.UpdatePropertyValues(
             ParametrizedEntity.ExistingEntity(entityIdsInClassArray[i][n]),

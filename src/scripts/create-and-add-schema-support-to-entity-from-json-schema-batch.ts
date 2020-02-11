@@ -16,21 +16,9 @@ import { PropertyValueEnumValue } from '@joystream/types/lib/versioned-store/Pro
 
 import entityJsons = require('../inputs/entity-values/add-schema-support-json-schemas/index.js');
 
-const CREDENTIAL_ONE = new u32(1);
-/*
-const CLASS_PERMISSIONS = new ClassPermissions({
-  entity_permissions: new EntityPermissions({
-    update: new CredentialSet([CREDENTIAL_ONE]),
-    maintainer_has_all_permissions: new bool(true),
-  }),
-  entities_can_be_created: new bool(true),
-  add_schemas: new CredentialSet([CREDENTIAL_ONE]),
-  create_entities: new CredentialSet([CREDENTIAL_ONE]),
-  reference_constraint: new ReferenceConstraint({'NoConstraint': new NoConstraint()}),
-  admins: new CredentialSet([]),
-  last_permissions_update: new u32(0), // BlockNumber
-});
-*/
+import {
+  CURRENT_LEAD_CREDENTIAL
+} from './credentials';
 
 
 const classNamesInput = process.argv[2] as string
@@ -42,7 +30,7 @@ const classNameArray:string[] = classNamesInput.split(',')
 console.log(classNameArray)
 
 const schemaIdsArray:number[] = []
-schemaIdsInput.split(',').forEach((value:string) => { 
+schemaIdsInput.split(',').forEach((value:string) => {
   schemaIdsArray.push(Number(value))
   })
 console.log(schemaIdsArray)
@@ -71,7 +59,7 @@ if (classNameArray.length != schemaIdsArray.length) {
 
 // async function
 async function main() {
-  const sub = new Substrate(); 
+  const sub = new Substrate();
   await sub.connect();
   sub.setKeypair({
     uri: '//Alice',
@@ -81,7 +69,7 @@ async function main() {
   const classMap = await checkForDuplicateExistingClassNames(sub)
   console.log('classes',classMap)
   const classNameToIdMap = await sub.classNameToIdMap()
-  
+
   const classIds = []
   //const classSchemaPropertyMaps: PropertyByNameMap[] = []
   const classPropertyMaps: PropertyByNameMap[] = []
@@ -116,7 +104,7 @@ async function main() {
           const propertyValueEnum:PropertyValueEnumValue = transformPropertyValueToEnum(propType,value)
           //console.log(propertyValueEnum)
           entityEnum.push(propertyValueEnum)
-        }  
+        }
       }
       enumsArray.push(entityEnum)
     }
@@ -131,7 +119,7 @@ async function main() {
   for (let i=0; i<transformedAddSchemaSupportByClassArray.length; i++) {
     for (let n=0; n<transformedAddSchemaSupportByClassArray[i].length; n++) {
       batch.push(new Operation({
-        with_credential: new Option(Credential, CREDENTIAL_ONE),
+        with_credential: new Option(Credential, CURRENT_LEAD_CREDENTIAL),
         as_entity_maintainer: new bool(true),
         operation_type: OperationType.CreateEntity(new ClassId(classIds[i]))
       }));
@@ -150,7 +138,7 @@ async function main() {
         }))
       }
       batch.push(new Operation({
-        with_credential: new Option(Credential, CREDENTIAL_ONE),
+        with_credential: new Option(Credential, CURRENT_LEAD_CREDENTIAL),
         as_entity_maintainer: new bool(true),
         operation_type: OperationType.AddSchemaSupportToEntity(
             ParametrizedEntity.InternalEntityJustAdded(new u32(addSchemaToEntityCounter)),
@@ -167,20 +155,20 @@ async function main() {
     await sub.signTxAndSend(sub.vsTx.transaction(batch));
 
     const entityIdAfterBatch = await sub.nextEntityId() as unknown as number
-  
+
     for (let i=0; i<classIds.length; i++) {
       const classId = classIds[i]
       const clazz = await sub.getClassById(classIds[i])
         .catch(err => console.log(`Failed to get class by id '${classId}'`, err));
       console.log(`Class by id`, classId, prettyClass(clazz))
     }
-    
+
     console.log(`All new entity ids:`)
 
     for (let i=entityIdBeforeBatch; i<entityIdAfterBatch; i++) {
       const entity = await sub.getEntityById(i)
         .catch(err => console.log(`Failed to get entity by id '${i}'`, err));
-  
+
       const entityAsText = await prettyEntity(entity, sub)
       console.log(`Entity by id`, Number(i), entityAsText)
     }

@@ -2,7 +2,7 @@ import { Substrate } from "../cli/substrate";
 import { prettyEntity } from '../cli/printers';
 import { checkForDuplicateExistingClassNames } from "../cli/checks";
 import { Credential } from '@joystream/types/lib/versioned-store/permissions/credentials';
-import { bool, u32, Option, Vec } from '@polkadot/types';
+import { bool, Option, Vec } from '@polkadot/types';
 import { OperationType} from '@joystream/types/lib/versioned-store/permissions/batching/operation-types';
 import { Operation } from '@joystream/types/lib/versioned-store/permissions/batching/';
 import ClassId from '@joystream/types/lib/versioned-store/ClassId';
@@ -18,21 +18,9 @@ import entityJsons = require('../inputs/entity-values/add-new-schema-support-jso
 import EntityId from '@joystream/types/lib/versioned-store/EntityId';
 import PropertyTypeName from '@joystream/types/lib/versioned-store/PropertyTypeName';
 
-const CREDENTIAL_ONE = new u32(1);
-/*
-const CLASS_PERMISSIONS = new ClassPermissions({
-  entity_permissions: new EntityPermissions({
-    update: new CredentialSet([CREDENTIAL_ONE]),
-    maintainer_has_all_permissions: new bool(true),
-  }),
-  entities_can_be_created: new bool(true),
-  add_schemas: new CredentialSet([CREDENTIAL_ONE]),
-  create_entities: new CredentialSet([CREDENTIAL_ONE]),
-  reference_constraint: new ReferenceConstraint({'NoConstraint': new NoConstraint()}),
-  admins: new CredentialSet([]),
-  last_permissions_update: new u32(0), // BlockNumber
-});
-*/
+import {
+  CURRENT_LEAD_CREDENTIAL
+} from './credentials';
 
 
 const classNamesInput = process.argv[2] as string
@@ -62,7 +50,7 @@ for (let i=0; i<classNameArray.length; i++) {
 
 // async function
 async function main() {
-  const sub = new Substrate(); 
+  const sub = new Substrate();
   await sub.connect();
   sub.setKeypair({
     uri: '//Alice',
@@ -72,7 +60,7 @@ async function main() {
   const classMap = await checkForDuplicateExistingClassNames(sub)
   console.log('classes',classMap)
   const classNameToIdMap = await sub.classNameToIdMap()
-  
+
   const classIds = []
   const classPropertyMaps: PropertyByNameMap[] = []
   for (let i=0; i<classNameArray.length; i++) {
@@ -83,7 +71,7 @@ async function main() {
     }
   }
   console.log("classPropertyMaps",classPropertyMaps)
-  
+
 
   const enumsClassArray:PropertyValueEnumValue[][][] = []
   const entityIdsInClassArray:EntityId[][] = []
@@ -136,7 +124,7 @@ async function main() {
         }))
       }
       batch.push(new Operation({
-        with_credential: new Option(Credential, CREDENTIAL_ONE),
+        with_credential: new Option(Credential, CURRENT_LEAD_CREDENTIAL),
         as_entity_maintainer: new bool(true),
         operation_type: OperationType.AddSchemaSupportToEntity(
             ParametrizedEntity.ExistingEntity(new EntityId(entityIdsInClassArray[i][n])),

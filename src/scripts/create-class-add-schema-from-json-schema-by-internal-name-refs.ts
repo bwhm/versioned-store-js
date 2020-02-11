@@ -7,23 +7,26 @@ import ClassPermissions from '@joystream/types/lib/versioned-store/permissions/C
 import EntityPermissions from '@joystream/types/lib/versioned-store/permissions/EntityPermissions';
 import { CredentialSet, Credential } from '@joystream/types/lib/versioned-store/permissions/credentials';
 import { bool, u32, Option } from '@polkadot/types';
-import { ReferenceConstraint, NoConstraint } from '@joystream/types/lib/versioned-store/permissions/reference-constraint';
+import { ReferenceConstraint } from '@joystream/types/lib/versioned-store/permissions/reference-constraint';
 import { transformAddClassSchema } from '../transformAddClassSchema'
 import ClassId from '@joystream/types/lib/versioned-store/ClassId';
 import { validateCreateClass } from '../validate'
 
-const CREDENTIAL_ONE = new u32(1);
+import {
+  CURRENT_LEAD_CREDENTIAL, ANY_CURATOR_CREDENTIAL, ANY_CHANNEL_OWNER_CREDENTIAL
+} from './credentials';
 
 const CLASS_PERMISSIONS = new ClassPermissions({
   entity_permissions: new EntityPermissions({
-    update: new CredentialSet([CREDENTIAL_ONE]),
+    update: new CredentialSet([CURRENT_LEAD_CREDENTIAL, ANY_CURATOR_CREDENTIAL]),
     maintainer_has_all_permissions: new bool(true),
   }),
   entities_can_be_created: new bool(true),
-  add_schemas: new CredentialSet([CREDENTIAL_ONE]),
-  create_entities: new CredentialSet([CREDENTIAL_ONE]),
-  reference_constraint: new ReferenceConstraint({'NoConstraint': new NoConstraint()}),
-  admins: new CredentialSet([]),
+  add_schemas: new CredentialSet([CURRENT_LEAD_CREDENTIAL]),
+  // for general classes no need for channel owners to create entities?
+  create_entities: new CredentialSet([CURRENT_LEAD_CREDENTIAL, ANY_CURATOR_CREDENTIAL, ANY_CHANNEL_OWNER_CREDENTIAL]),
+  reference_constraint: ReferenceConstraint.NoConstraint(),
+  admins: new CredentialSet([CURRENT_LEAD_CREDENTIAL]),
   last_permissions_update: new u32(0), // BlockNumber
 });
 
@@ -96,7 +99,7 @@ async function main() {
 
   // Add new schemas to classes from imported JSON
   const transformedSchemas = await transformClassSchemaByNameToId(newSchemas,sub)
-  
+
   for (let schemaItem in transformedSchemas){
     const schema = transformedSchemas[schemaItem]
     const propMap = await sub.getClassPropertyMap(new ClassId(schema.classId))
@@ -110,7 +113,7 @@ async function main() {
 
   for (let schemaItem in transformedSchemas){
     const schema = transformedSchemas[schemaItem]
-    const newClassSchemaAddedEvent = await sub.txAddClassSchema(schema, new Option(Credential, CREDENTIAL_ONE))
+    const newClassSchemaAddedEvent = await sub.txAddClassSchema(schema, new Option(Credential, CURRENT_LEAD_CREDENTIAL))
     //newClassSchemasCreated.push([JSON.parse(`${newClassSchemaAddedEvent[0]}`),JSON.parse(`${newClassSchemaAddedEvent[1]}`)])
     if (newClassesAffected.indexOf(newClassSchemaAddedEvent[0]) == -1 ) {
       newClassesAffected.push(newClassSchemaAddedEvent[0])
