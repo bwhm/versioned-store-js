@@ -8,7 +8,7 @@
             [
                 {
                     "name": "Value",
-                    "value": "Unpublished Content"
+                    "value": "Public Content"
                 }
             ]
         },
@@ -18,7 +18,7 @@
             [
                 {
                     "name": "Value",
-                    "value": "Published Content"
+                    "value": "Unlisted Content"
                 }
             ]
         }
