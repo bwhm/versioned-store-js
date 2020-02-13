@@ -9,7 +9,7 @@
             [
                 {
                     "name": "Value",
-                    "value": "Unpublished"
+                    "value": "Public"
                 }
             ]
         },
@@ -20,7 +20,7 @@
             [
                 {
                     "name": "Value",
-                    "value": "Published"
+                    "value": "Unlisted"
                 }
             ]
         }
