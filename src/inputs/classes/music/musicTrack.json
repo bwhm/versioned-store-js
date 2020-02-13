@@ -2,3 +2,4 @@
   "name": "Music Track",
   "description": "A track is an individual song or instrumental recording."
 }
+// Only lead can add schemas.

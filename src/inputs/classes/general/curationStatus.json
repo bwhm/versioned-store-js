@@ -2,3 +2,4 @@
   "name": "Curation Status",
   "description": "Class for curators to set the publication status of a content entity."
 }
+// Only lead can create entitites and add schemas.

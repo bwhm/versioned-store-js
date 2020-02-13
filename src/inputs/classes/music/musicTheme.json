@@ -2,3 +2,4 @@
   "name": "Music Theme",
   "description": "Class for setting the themes for music."
 }
+// Only lead can create entitites and add schemas.
