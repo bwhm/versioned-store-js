@@ -19,6 +19,7 @@ import entityJsons = require('../inputs/entity-values/add-schema-support-json-sc
 import {
   CURRENT_LEAD_CREDENTIAL
 } from './credentials';
+import { KeypairType } from '@polkadot/util-crypto/types';
 
 
 const classNamesInput = process.argv[2] as string
@@ -59,11 +60,14 @@ if (classNameArray.length != schemaIdsArray.length) {
 
 // async function
 async function main() {
+  const LEAD_SEED_URI = process.env['LEAD_SEED_URI'];
+  const LEAD_KEY_TYPE = process.env['LEAD_KEY_TYPE'] as KeypairType;
+
   const sub = new Substrate();
   await sub.connect();
   sub.setKeypair({
-    uri: '//Alice',
-    type: 'sr25519'
+    uri: LEAD_SEED_URI || '//Alice',
+    type: LEAD_KEY_TYPE || 'sr25519'
   })
 
   const classMap = await checkForDuplicateExistingClassNames(sub)
