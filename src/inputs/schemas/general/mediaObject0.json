@@ -7,6 +7,11 @@
       "type": "Text",
       "required": true,
       "maxTextLength": 68
+    },
+    {
+      "name": "Channel Id",
+      "description": "Id of the channel this media object is published under.",
+      "type": "Uint64"
     }
   ]
 }
