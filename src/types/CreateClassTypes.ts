@@ -3,7 +3,8 @@ import { Text } from '@polkadot/types';
 export type CreateClassInputType = {
   name: string,
   description: string,
-  channel_owners_can_create_entity?: boolean
+  add_schema_restricted_to_lead?: boolean,
+  create_entity_restricted_to_lead?: boolean,
 }
 
 export type CreateClassOutputType = {

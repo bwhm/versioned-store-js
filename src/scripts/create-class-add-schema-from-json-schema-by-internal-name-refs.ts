@@ -18,19 +18,28 @@ import {
 
 // take newClassInputType arg
 function makeClassPermissions (newClass: CreateClassInputType) {
-  let createEntitiesCredentials = [CURRENT_LEAD_CREDENTIAL, ANY_CURATOR_CREDENTIAL];
+  let addSchemasCredentials = [CURRENT_LEAD_CREDENTIAL];
+  let createEntitiesCredentials = [CURRENT_LEAD_CREDENTIAL];
 
-  if (newClass.channel_owners_can_create_entity) {
-    createEntitiesCredentials.push(ANY_CHANNEL_OWNER_CREDENTIAL)
+  // DRR: Error: submitAndWatchExtrinsic (extrinsic: Extrinsic): ExtrinsicStatus:: 1010: Invalid Transaction: BadProof
+  // When CredentialSet has more than one element..
+  if (!newClass.create_entity_restricted_to_lead) {
+    createEntitiesCredentials.push(ANY_CHANNEL_OWNER_CREDENTIAL);
+    createEntitiesCredentials.push(ANY_CURATOR_CREDENTIAL);
+  }
+
+  if (!newClass.add_schema_restricted_to_lead) {
+    addSchemasCredentials.push(ANY_CHANNEL_OWNER_CREDENTIAL);
+    addSchemasCredentials.push(ANY_CURATOR_CREDENTIAL);
   }
 
   return new ClassPermissions({
     entity_permissions: new EntityPermissions({
-      update: new CredentialSet([CURRENT_LEAD_CREDENTIAL, ANY_CURATOR_CREDENTIAL]),
+      update: new CredentialSet(createEntitiesCredentials),
       maintainer_has_all_permissions: new bool(true),
     }),
     entities_can_be_created: new bool(true),
-    add_schemas: new CredentialSet([CURRENT_LEAD_CREDENTIAL]),
+    add_schemas: new CredentialSet(addSchemasCredentials),
     create_entities: new CredentialSet(createEntitiesCredentials),
     reference_constraint: ReferenceConstraint.NoConstraint(),
     admins: new CredentialSet([CURRENT_LEAD_CREDENTIAL]),
@@ -44,6 +53,7 @@ const addSchemas = process.argv[3] as string
 
 //import new class JSON(s)
 import createClassJsons = require('../inputs/classes/index.js');
+import { KeypairType } from '@polkadot/util-crypto/types';
 
 //import new schema JSON(s)
 const addClassSchemaJsons:ClassSchemaInputByClassNameType = require('../inputs/schemas/index.js');
@@ -76,13 +86,15 @@ if (addSchemas != "false") {
 
 // async function
 async function main() {
+  const LEAD_SEED_URI = process.env['LEAD_SEED_URI'];
+  const LEAD_KEY_TYPE = process.env['LEAD_KEY_TYPE'] as KeypairType;
+
   const sub = new Substrate();
   await sub.connect();
   sub.setKeypair({
-    uri: '//Alice',
-    type: 'sr25519'
+    uri: LEAD_SEED_URI || '//Alice',
+    type: LEAD_KEY_TYPE || 'sr25519'
   })
-
 
   // Validate unique classnames
   const classMap = await checkUniqueClassNamesFromJson(newClasses, sub)

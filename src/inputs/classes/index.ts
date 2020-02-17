@@ -15,13 +15,13 @@ import musicGenre = require('./music/musicGenre.json');
 import musicMood = require('./music/musicMood.json');
 import musicTheme = require('./music/musicTheme.json');
   //test
-import test = require('./test/test.json');
+// import test = require('./test/test.json');
 
 const createClassJsons = [
   mediaObject,language,contentLicense,publicationStatus,curationStatus,featuredContent,
   video,videoCategory,
   musicAlbum,musicGenre,musicMood,musicTheme,musicTrack,
-  test
+  // test
 ]
 
 export default createClassJsons

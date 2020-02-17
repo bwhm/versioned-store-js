@@ -17,6 +17,14 @@
     "description": {
       "type": "string",
       "description": "Description of this class."
+    },
+    "add_schema_restricted_to_lead": {
+      "type": "boolean",
+      "description": "True if only lead should be allowed to add schemas"
+    },
+    "create_entity_restricted_to_lead": {
+      "type": "boolean",
+      "description": "True if only lead should be allowed to create entities"
     }
   }
 }
