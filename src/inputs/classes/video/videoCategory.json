@@ -1,4 +1,5 @@
 {
   "name": "Video Category",
-  "description": "Class for setting the category for videos."
+  "description": "Class for setting the category for videos in the Video class."
 }
+// Only lead can create entitites and add schemas.

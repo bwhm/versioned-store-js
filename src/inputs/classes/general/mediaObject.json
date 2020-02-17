@@ -2,3 +2,4 @@
   "name": "Media Object",
   "description": "Class for resolving a content entity to an actual media file or link."
 }
+// Only lead can add schemas.

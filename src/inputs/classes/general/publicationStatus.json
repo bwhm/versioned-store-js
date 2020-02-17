@@ -2,3 +2,4 @@
   "name": "Publication Status",
   "description": "Class for setting the publication status of a content entity."
 }
+// Only lead can create entitites and add schemas.

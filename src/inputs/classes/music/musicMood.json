@@ -2,3 +2,4 @@
   "name": "Music Mood",
   "description": "Class for setting the moods for music."
 }
+// Only lead can create entitites and add schemas.

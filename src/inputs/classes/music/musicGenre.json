@@ -2,3 +2,4 @@
   "name": "Music Genre",
   "description": "Class for setting the genre for music."
 }
+// Only lead can create entitites and add schemas.
