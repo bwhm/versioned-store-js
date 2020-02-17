@@ -14,7 +14,7 @@ import videoCategory = require('./videoCategory.json');
 import musicGenre = require('./musicGenre.json');
 import musicMood = require('./musicMood.json');
 import musicTheme = require('./musicTheme.json');
-import test = require('./test.json');
+// import test = require('./test.json');
 
 
 
@@ -22,7 +22,7 @@ const entityJsons = [
   language,publicationStatus,curationStatus,contentLicense,
   videoCategory,
   musicGenre,musicMood,musicTheme,
-  test
+  // test
 ]
 
 export default entityJsons

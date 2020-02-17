@@ -22,15 +22,16 @@ function makeClassPermissions (newClass: CreateClassInputType) {
   let createEntitiesCredentials = [CURRENT_LEAD_CREDENTIAL];
 
   // DRR: Error: submitAndWatchExtrinsic (extrinsic: Extrinsic): ExtrinsicStatus:: 1010: Invalid Transaction: BadProof
-  // When CredentialSet has more than one element..
+  // When CredentialSet either has duplicate elements or un-ordered elements
+  // remember in the runtime this is a BTreeSet and we are simulating it with a Vec
   if (!newClass.create_entity_restricted_to_lead) {
-    createEntitiesCredentials.push(ANY_CHANNEL_OWNER_CREDENTIAL);
     createEntitiesCredentials.push(ANY_CURATOR_CREDENTIAL);
+    createEntitiesCredentials.push(ANY_CHANNEL_OWNER_CREDENTIAL);
   }
 
   if (!newClass.add_schema_restricted_to_lead) {
-    addSchemasCredentials.push(ANY_CHANNEL_OWNER_CREDENTIAL);
     addSchemasCredentials.push(ANY_CURATOR_CREDENTIAL);
+    addSchemasCredentials.push(ANY_CHANNEL_OWNER_CREDENTIAL);
   }
 
   return new ClassPermissions({
