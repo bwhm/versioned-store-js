@@ -14,6 +14,8 @@ const entitityValueLists:PropertyValueInputType[][] = require('../inputs/entity-
 
 export function generateEntityJsonSchemaFromList(className:string, schemaId:number, propertyNames:string[]) {
 
+  console.log("propertyNames",propertyNames)
+
   const camelCaseClassName = convertToCamelCase(className)
   console.log("camelCaseClassName",camelCaseClassName)
   const entities: AddSchemaSupportToEntityInputType[] = []
@@ -23,7 +25,7 @@ export function generateEntityJsonSchemaFromList(className:string, schemaId:numb
     }
   let entityId: EntityIdInputType = 1
   for (let i=0; i<entitityValueLists["entityValueList"].length; i++) {
-    if (entitityValueLists["entityValueList"][i].hasOwnProperty(camelCaseClassName)) {
+    if (entitityValueLists["entityValueList"][i].hasOwnProperty(camelCaseClassName)) {      
       let props = propertyNames.length
       let values = entitityValueLists["entityValueList"][i][camelCaseClassName].length
       let counter = 0

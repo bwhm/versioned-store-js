@@ -1,6 +1,6 @@
 import { PropertyValueInputType } from "../../../types/PropertyTypes";
 
-export const musicThemes:PropertyValueInputType[] = [
+export const musicTheme:PropertyValueInputType[] = [
   "Adventure",
   "Affection/Fondness",
   "Affirmation",

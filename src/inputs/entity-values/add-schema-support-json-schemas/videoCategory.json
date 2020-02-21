@@ -20,7 +20,29 @@
             [
                 {
                     "name": "Value",
+                    "value": "Autos & Vehicles"
+                }
+            ]
+        },
+        {
+            "entityId": 1,
+            "schemaId": 0,
+            "propertyValues":
+            [
+                {
+                    "name": "Value",
                     "value": "Music"
+                }
+            ]
+        },
+        {
+            "entityId": 1,
+            "schemaId": 0,
+            "propertyValues":
+            [
+                {
+                    "name": "Value",
+                    "value": "Pets & Animals"
                 }
             ]
         },
@@ -42,7 +64,29 @@
             [
                 {
                     "name": "Value",
+                    "value": "Travel & Events"
+                }
+            ]
+        },
+        {
+            "entityId": 1,
+            "schemaId": 0,
+            "propertyValues":
+            [
+                {
+                    "name": "Value",
                     "value": "Gaming"
+                }
+            ]
+        },
+        {
+            "entityId": 1,
+            "schemaId": 0,
+            "propertyValues":
+            [
+                {
+                    "name": "Value",
+                    "value": "People & Blogs"
                 }
             ]
         },
@@ -64,6 +108,17 @@
             [
                 {
                     "name": "Value",
+                    "value": "Entertainment"
+                }
+            ]
+        },
+        {
+            "entityId": 1,
+            "schemaId": 0,
+            "propertyValues":
+            [
+                {
+                    "name": "Value",
                     "value": "News & Politics"
                 }
             ]
@@ -75,7 +130,29 @@
             [
                 {
                     "name": "Value",
+                    "value": "Howto & Style"
+                }
+            ]
+        },
+        {
+            "entityId": 1,
+            "schemaId": 0,
+            "propertyValues":
+            [
+                {
+                    "name": "Value",
                     "value": "Education"
+                }
+            ]
+        },
+        {
+            "entityId": 1,
+            "schemaId": 0,
+            "propertyValues":
+            [
+                {
+                    "name": "Value",
+                    "value": "Science & Technology"
                 }
             ]
         },

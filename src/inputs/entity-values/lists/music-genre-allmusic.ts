@@ -1,6 +1,6 @@
 import { PropertyValueInputType } from "../../../types/PropertyTypes";
 
-export const musicGenres:PropertyValueInputType[] = [
+export const musicGenre:PropertyValueInputType[] = [
   "Avant-Garde",
   "Blues",
   "Children's",
