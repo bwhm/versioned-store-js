@@ -317,6 +317,7 @@ program
       for (let i=0; i<propertyNamesArray.length; i++) {
         propertyNames.push(convertFromCamelCase(propertyNamesArray[i]))
       }
+      console.log("propertyNamesArray",propertyNamesArray)
       const entityJson = await EntityJsonSchemaFromList(className,schemaId,propertyNames)
       console.log(JSON.stringify(entityJson,null,1))
       return entityJson

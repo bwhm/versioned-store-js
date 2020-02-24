@@ -1,6 +1,6 @@
 import { PropertyValueInputType } from "../../../types/PropertyTypes";
 
-export const musicMoods:PropertyValueInputType[] = [
+export const musicMood:PropertyValueInputType[] = [
   "Acerbic",
   "Aggressive",
   "Agreeable",

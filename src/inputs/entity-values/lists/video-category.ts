@@ -1,6 +1,6 @@
 import { PropertyValueInputType } from "../../../types/PropertyTypes";
 
-export const videoCategories: PropertyValueInputType[] = [
+export const videoCategory: PropertyValueInputType[] = [
   "Film & Animation",
   "Autos & Vehicles",
   "Music",
